@@ -57,6 +57,27 @@ pub fn dismiss() {
     println!("dismiss");
 }
 
-fn add_to_gitignore() {}
+fn add_to_gitignore() {
+    let content = fs::read_to_string(".gitignore");
+    match content {
+        Ok(v) => {let ignore = format!("{}\n.chant", v); let _ = fs::write(".gitignore", ignore);},
+        Err(e) => {println!("{}", e); return}
+    }
+}
 
-fn remove_from_gitignore() {}
+fn remove_from_gitignore() {
+    let content = fs::read_to_string(".gitignore");
+    match content {
+        Ok(v) => {
+            let lines = v.split("\n");
+            let mut ignore = "".to_owned();
+            for line in lines {
+                if line != ".chant" {
+                    ignore.push_str(line); 
+                }
+            }
+            let _ = fs::write(".gitignore", ignore);
+        },
+        Err(e) => {println!("{}", e); return}
+    }
+}
