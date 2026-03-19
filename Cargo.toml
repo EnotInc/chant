@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 hf = "0.6.0"
+walkdir = "2"

@@ -1,3 +1,4 @@
+use walkdir::WalkDir;
 use std::fs;
 use hf;
 
@@ -35,6 +36,40 @@ pub fn scan() {
         return; 
     }
     println!("scanning...");
+    let skip = &["target", ".git", "node_modules"];
+
+    let mut it = WalkDir::new(".").into_iter();
+    while let Some(entry) = it.next(){
+        match entry {
+            Ok(e) => {
+                if e.file_type().is_dir() && skip.contains(&e.file_name().to_string_lossy().as_ref()) {
+                    it.skip_current_dir();
+                    continue;
+                }
+                if !e.file_type().is_dir() {
+                    read_file(&e.path().to_string_lossy());
+                }
+            },
+            Err(e) => println!("{}", e),
+        }
+    }
+}
+
+fn read_file(path: &str){
+    let comments = &["TODO", "NOTE", "FIXME"];
+
+    let content = fs::read_to_string(path);
+    match content {
+        Ok(v) => {
+            let lines = v.split("\n");
+            for line in lines {
+                if comments.iter().any(|&comment| line.contains(comment)) {
+                    println!("{}", line)
+                }
+            }
+        },
+        Err(e) => {println!("{}", e); return;}
+    }
 }
 
 pub fn list() {
@@ -44,7 +79,7 @@ pub fn list() {
     }
 
     scan();
-    println!("some data");
+    // TODO: read .chant/comments.json file next
 }
 
 pub fn dismiss() {
