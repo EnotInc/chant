@@ -2,7 +2,7 @@ use walkdir::WalkDir;
 use std::fs;
 use hf;
 
-use crate::{comments::{self, new_storage}, parser};
+use crate::{comments, parser};
 
 // TODO: rewrite notificatoins
 
@@ -41,31 +41,34 @@ pub fn scan() {
     }
     println!("scanning...");
     let skip = &["target", ".git", "node_modules"];
-
-    let mut storage = comments::new_storage();
+    let storage = load_storage();
+    let mut new_storage = comments::new_storage();
 
     let mut it = WalkDir::new(".").into_iter();
     while let Some(entry) = it.next(){
         match entry {
             Ok(e) => {
                 let file_name = e.file_name().to_string_lossy();
+                let path = &e.path().to_string_lossy();
                 if e.file_type().is_dir() && skip.contains(&file_name.as_ref()) {
                     it.skip_current_dir();
                     continue;
                 }
                 if !e.file_type().is_dir() {
-                    let comments=  parser::parse_file(&e.path().to_string_lossy());
-                    for c in comments {
-                        let not_hash = format!("{}:{}",c.line, c.index);
-                        storage.comments.insert(not_hash, c);
+                    if storage.files.contains_key(&path.to_string()){
+                        let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
+                        new_storage.files.insert(path.to_string(), new_file);
+                    }
+                    else {
+                        let new_file = parser::parse_new_file(path.to_string());
+                        new_storage.files.insert(path.to_string(), new_file);
                     }
                 }
             },
-            Err(e) => println!("{}", e),
+            Err(e) => panic!("{}", e),
         }
     }
-
-    save_storage(&storage);
+    save_storage(&new_storage);
 }
 
 pub fn list() {
@@ -75,10 +78,13 @@ pub fn list() {
     }
 
     scan();
-    // TODO: read .chant/comments.json file next
     let s = load_storage();
-    for comment in s.comments {
-        println!("{} {}:{} - {}", comment.1.kind, comment.1.file, comment.1.index, comment.1.line);
+    for file in s.files {
+        for comment in file.1.comments {
+            let c = comment.1;
+            // TODO: add colors
+            println!("{} {}:{} - {}", c.kind, file.1.path, c.index, c.line);
+        }
     }
 }
 
@@ -134,9 +140,9 @@ fn load_storage() -> comments::Storage{
                 Ok(sorage) => {
                     return sorage;
                 },
-                Err(err)=>{println!("{}", err); return new_storage();}
+                Err(_)=>{return comments::new_storage();}
             }
         },
-        Err(e)=>{println!("{}", e); return new_storage()}
+        Err(e)=>{println!("{}", e); return comments::new_storage()}
     }
 }

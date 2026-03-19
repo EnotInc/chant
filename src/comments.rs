@@ -2,23 +2,37 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::hash;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Storage {
-    pub comments: HashMap<String, Comment>
+    pub files: HashMap<String, File>
 }
 
 pub fn new_storage() -> Storage {
-    return Storage { comments: HashMap::new() };
+    return Storage { files: HashMap::new() };
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct File {
+    pub hash: u64,
+    pub path: String,
+    pub comments: HashMap<String, Comment>
+}
+
+pub fn new_file(path: String, content: &String) -> File {
+    return File{hash: hash::get_hash(content), path: path, comments: HashMap::new()}
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Comment {
-    pub file: String,
     pub kind: String,
     pub line: String,
-    pub index: i32
+    pub index: i32,
+    pub hash: u64
 }
 
-pub fn new_comment(file: String, kind:String, line: String, index: i32) -> Comment {
-    return Comment{ file: file, kind: kind, line: line, index: index }
+pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
+    return Comment{kind: kind, line: line, index: index, hash: hash }
 }
