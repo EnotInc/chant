@@ -2,7 +2,7 @@ use walkdir::WalkDir;
 use std::fs;
 use hf;
 
-use crate::{comments, parser};
+use crate::{comments, config, parser};
 
 // TODO: rewrite notificatoins
 
@@ -16,6 +16,9 @@ pub fn init(){
         let _ = fs::create_dir("./.chant");
         let _ = hf::hide("./.chant");
         let _ = fs::File::create("./.chant/comments.json");
+
+        let _ = fs::File::create("./.chant/config.toml");
+        config::create_config();
     } else {
         println!("chant is already initialised");
         return;
@@ -40,7 +43,9 @@ pub fn scan() {
         return; 
     }
     println!("scanning...");
-    let skip = &["target", ".git", "node_modules"];
+
+    let config = config::read_config();
+
     let storage = load_storage();
     let mut new_storage = comments::new_storage();
 
@@ -50,22 +55,24 @@ pub fn scan() {
             Ok(e) => {
                 let file_name = e.file_name().to_string_lossy();
                 let path = &e.path().to_string_lossy();
-                if e.file_type().is_dir() && skip.contains(&file_name.as_ref()) {
+                if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
                 }
-                if !e.file_type().is_dir() {
-                    if storage.files.contains_key(&path.to_string()){
-                        let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
-                        new_storage.files.insert(path.to_string(), new_file);
-                    }
-                    else {
-                        let new_file = parser::parse_new_file(path.to_string());
-                        new_storage.files.insert(path.to_string(), new_file);
+                if let Some(ext) = e.path().extension(){
+                    if config.read.contains(&ext.display().to_string()) {
+                        if storage.files.contains_key(&path.to_string()){
+                            let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
+                            new_storage.files.insert(path.to_string(), new_file);
+                        }
+                        else {
+                            let new_file = parser::parse_new_file(path.to_string());
+                            new_storage.files.insert(path.to_string(), new_file);
+                        }
                     }
                 }
             },
-            Err(e) => panic!("{}", e),
+            Err(e) => println!("unable to scan: {}", e),
         }
     }
     save_storage(&new_storage);

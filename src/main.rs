@@ -4,6 +4,7 @@ mod commands;
 mod parser;
 mod comments;
 mod hash;
+mod config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

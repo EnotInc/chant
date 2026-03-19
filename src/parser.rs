@@ -1,7 +1,7 @@
 use std::fs;
 use regex::Regex;
 
-use crate::{comments, hash};
+use crate::{comments::{self, new_file}, hash};
 
 pub fn parse_new_file(path: String) -> comments::File{
 
@@ -10,22 +10,25 @@ pub fn parse_new_file(path: String) -> comments::File{
 
     let content = fs::read_to_string(&path);
     match content {
-    Ok(v) => {
-        let mut new_file = comments::new_file(path, &v);
-        let lines = v.split("\n");
-        let mut index: i32 = 0;
-        for line in lines {
-            index += 1;
-            if let Some(captures) = re.captures(line) {
-                let new_line_hash = hash::get_hash(&line.to_string());
-                let c = comments::new_comment(captures[1].to_string(), captures[2].to_string(), index, new_line_hash);
-                new_file.comments.insert(new_line_hash.to_string(), c.clone());
+        Ok(v) => {
+            let mut new_file = comments::new_file(path, &v);
+            let lines = v.split("\n");
+            let mut index: i32 = 0;
+            for line in lines {
+                index += 1;
+                if let Some(captures) = re.captures(line) {
+                    let new_line_hash = hash::get_hash(&line.to_string());
+                    let c = comments::new_comment(captures[1].to_string(), captures[2].to_string(), index, new_line_hash);
+                    new_file.comments.insert(new_line_hash.to_string(), c.clone());
+                }
             }
-        }
 
-        return new_file;
-    },
-    Err(e) => {panic!("{}", e);}
+            return new_file;
+        },
+        Err(e) => {
+            println!("Error at file: {}\n{}", path, e); 
+            return new_file(path, &String::new());
+        }
     }
 }
 
@@ -58,6 +61,9 @@ pub fn parse_file(old_file: &comments::File) -> comments::File{
 
             return new_file;
         },
-        Err(e) => {panic!("{}", e);}
+        Err(e) => {
+            println!("Error at file: {}\n{}", old_file.path, e);
+            return old_file.clone();
+        }
     }
 }
