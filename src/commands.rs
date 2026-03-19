@@ -2,31 +2,33 @@ use walkdir::WalkDir;
 use std::fs;
 use hf;
 
-use crate::{comments, config, parser};
-
-// TODO: rewrite notificatoins
+use crate::{color, comments, config, parser};
 
 fn init_first() {
-    println!("chant wasn't initialised. Run chant init");
+    let error = color::paint_str("Error:".to_string(), color::Color::Red);
+    let chant_init = color::paint_str("'$ chant init'".to_string(), color::Color::Yellow);
+    println!("{error} chant wasn't initialised. Run {chant_init}");
 }
 
 pub fn init(){
-    println!("initialisation...");
     if !is_initialised(){
         let _ = fs::create_dir("./.chant");
         let _ = hf::hide("./.chant");
-        let _ = fs::File::create("./.chant/comments.json");
+        let _ = fs::File::create("./.chant/storage.json");
 
         let _ = fs::File::create("./.chant/config.toml");
         config::create_config();
     } else {
-        println!("chant is already initialised");
+        let error = color::paint_str("Error:".to_string(), color::Color::Red);
+        let chant_dismiss = color::paint_str("$ chant dismiss".to_string(), color::Color::Yellow);
+        println!("{error} Chant is already initialised.\nRun {chant_dismiss} remove chant from this directory");
         return;
     }
 
     add_to_gitignore();
 
-    println!("done!")
+    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
+    println!("{chant} was initialised successfully")
 }
 
 fn is_initialised() -> bool {
@@ -37,12 +39,21 @@ fn is_initialised() -> bool {
     }
 }
 
+pub fn bad_syntax() {
+    let error = color::paint_str("Error:".to_string(), color::Color::Red);
+    println!("{error} bad syntax");
+}
+
+pub fn unknown_command() {
+    let error = color::paint_str("Error:".to_string(), color::Color::Red);
+    println!("{error} unknown command");
+}
+
 pub fn scan() {
     if !is_initialised(){
         init_first();
         return; 
     }
-    println!("scanning...");
 
     let config = config::read_config();
 
@@ -58,17 +69,13 @@ pub fn scan() {
                 if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
-                }
-                if let Some(ext) = e.path().extension(){
-                    if config.read.contains(&ext.display().to_string()) {
-                        if storage.files.contains_key(&path.to_string()){
-                            let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
-                            new_storage.files.insert(path.to_string(), new_file);
-                        }
-                        else {
-                            let new_file = parser::parse_new_file(path.to_string());
-                            new_storage.files.insert(path.to_string(), new_file);
-                        }
+                } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension(){
+                    if config.read.contains(&ext.display().to_string()) && storage.files.contains_key(&path.to_string()) {
+                        let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
+                        new_storage.files.insert(path.to_string(), new_file);
+                    } else {
+                        let new_file = parser::parse_new_file(path.to_string());
+                        new_storage.files.insert(path.to_string(), new_file);
                     }
                 }
             },
@@ -89,8 +96,18 @@ pub fn list() {
     for file in s.files {
         for comment in file.1.comments {
             let c = comment.1;
-            // TODO: add colors
-            println!("{} {}:{} - {}", c.kind, file.1.path, c.index, c.line);
+
+            let mut kind_color = color::Color::Yellow;
+            match c.kind.as_str() {
+                "TODO" => kind_color = color::Color::Blue,
+                "NOTE" => kind_color = color::Color::Green,
+                "FIXME" => kind_color = color::Color::Red,
+                _ => {}
+            }
+            let kind = color::paint_str(c.kind, kind_color);
+            let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
+            let index = color::paint_str(c.index.to_string(), color::Color::Cyan);
+            println!("[{}] {}:{} - {}", kind, path, index, c.line);
         }
     }
 }
@@ -102,14 +119,18 @@ pub fn dismiss() {
     }
     let _ = fs::remove_dir_all("./.chant");
     remove_from_gitignore();
-    println!("dismiss");
+    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
+    println!("{chant} was removed");
 }
 
 fn add_to_gitignore() {
     let content = fs::read_to_string(".gitignore");
     match content {
-        Ok(v) => {let ignore = format!("{}\n.chant", v); let _ = fs::write(".gitignore", ignore);},
-        Err(e) => {println!("{}", e); return}
+        Ok(v) => {
+            let ignore = format!("{}\n.chant", v);
+        let _ = fs::write(".gitignore", ignore);
+    },
+        Err(_) => { return }
     }
 }
 
@@ -126,20 +147,27 @@ fn remove_from_gitignore() {
             }
             let _ = fs::write(".gitignore", ignore);
         },
-        Err(e) => {println!("{}", e); return}
+        Err(e) => {
+            let error = color::paint_str("Error:".to_string(), color::Color::Red);
+            println!("{error} unable to remove .chant/ direcotry from .gitignore. You should do this manually\n{e}");
+            return
+        }
     }
 }
 
 fn save_storage(storage: &comments::Storage) {
     let json = serde_json::to_string(storage);
     match json {
-        Ok(v)=>{let _ = fs::write("./.chant/comments.json", v);},
-        Err(e)=>{println!("{}", e)}
+        Ok(v)=>{let _ = fs::write("./.chant/storage.json", v);},
+        Err(e)=>{
+            let error = color::paint_str("Error:".to_string(), color::Color::Red);
+            println!("{error} unable to save storage\n{e}")
+        }
     }
 }
 
 fn load_storage() -> comments::Storage{
-    let content = fs::read_to_string("./.chant/comments.json");
+    let content = fs::read_to_string("./.chant/storage.json");
     match content {
         Ok(v) =>{
             let res: Result<comments::Storage, serde_json::Error >= serde_json::from_str(&v);

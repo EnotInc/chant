@@ -5,6 +5,7 @@ mod parser;
 mod comments;
 mod hash;
 mod config;
+mod color;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -14,11 +15,11 @@ fn main() {
            "init" => commands::init(),
            "scan" => commands::scan(),
            "dismiss" => commands::dismiss(),
-           _ => println!("unknown command")
+           _ => commands::unknown_command(),
        }
     } else if args.len() == 1 {
         commands::list();
     } else {
-        println!("bad syntax")
+        commands::bad_syntax();
     }
 }

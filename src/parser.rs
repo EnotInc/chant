@@ -25,8 +25,7 @@ pub fn parse_new_file(path: String) -> comments::File{
 
             return new_file;
         },
-        Err(e) => {
-            println!("Error at file: {}\n{}", path, e); 
+        Err(_) => {
             return new_file(path, &String::new());
         }
     }
@@ -61,8 +60,7 @@ pub fn parse_file(old_file: &comments::File) -> comments::File{
 
             return new_file;
         },
-        Err(e) => {
-            println!("Error at file: {}\n{}", old_file.path, e);
+        Err(_) => {
             return old_file.clone();
         }
     }
