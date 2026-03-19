@@ -28,7 +28,10 @@ pub fn init(){
     add_to_gitignore();
 
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
-    println!("{chant} was initialised successfully")
+
+    scan();
+
+    println!("{chant} was initialised successfully");
 }
 
 fn is_initialised() -> bool {
@@ -69,13 +72,15 @@ pub fn scan() {
                 if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
-                } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension(){
-                    if config.read.contains(&ext.display().to_string()) && storage.files.contains_key(&path.to_string()) {
-                        let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
-                        new_storage.files.insert(path.to_string(), new_file);
-                    } else {
-                        let new_file = parser::parse_new_file(path.to_string());
-                        new_storage.files.insert(path.to_string(), new_file);
+                } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
+                    if config.read.contains(&ext.display().to_string()){
+                        if storage.files.contains_key(&path.to_string()) {
+                            let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
+                            new_storage.files.insert(path.to_string(), new_file);
+                        } else {
+                            let new_file = parser::parse_new_file(path.to_string());
+                            new_storage.files.insert(path.to_string(), new_file);
+                        }
                     }
                 }
             },
@@ -93,6 +98,12 @@ pub fn list() {
 
     scan();
     let s = load_storage();
+    if s.files.len() == 0 {
+        let nothing = color::paint_str("Nothing".to_string(), color::Color::Red);
+        println!("{nothing} was found");
+        return;
+    }
+
     for file in s.files {
         for comment in file.1.comments {
             let c = comment.1;

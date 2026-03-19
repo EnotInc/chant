@@ -25,12 +25,12 @@ fn new_config() -> Config {
 
 
 pub fn read_config() -> Config {
-    let content = fs::read_to_string("./.chant.config.toml");
+    let content = fs::read_to_string("./.chant/config.toml");
     match content {
         Ok(v) => {
             let _cfg: Config = toml::from_str(&v).unwrap();
             return _cfg;
         },
-        Err(_) => { return new_config() }
+        Err(_) => {print!("getting new config"); return new_config() }
     }
 }
