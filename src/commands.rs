@@ -1,3 +1,4 @@
+use regex::Regex;
 use walkdir::WalkDir;
 use std::fs;
 use hf;
@@ -42,12 +43,13 @@ pub fn scan() {
     while let Some(entry) = it.next(){
         match entry {
             Ok(e) => {
-                if e.file_type().is_dir() && skip.contains(&e.file_name().to_string_lossy().as_ref()) {
+                let file_name = e.file_name().to_string_lossy();
+                if e.file_type().is_dir() && skip.contains(&file_name.as_ref()) {
                     it.skip_current_dir();
                     continue;
                 }
                 if !e.file_type().is_dir() {
-                    read_file(&e.path().to_string_lossy());
+                    read_file(&e.path().to_string_lossy(),&file_name);
                 }
             },
             Err(e) => println!("{}", e),
@@ -55,16 +57,20 @@ pub fn scan() {
     }
 }
 
-fn read_file(path: &str){
-    let comments = &["TODO", "NOTE", "FIXME"];
+fn read_file(path: &str, file_name: &str){
+    let re = Regex::new(r"//\s*(TODO|NOTE|FIXME)[:\s]*(.*)").unwrap();
 
     let content = fs::read_to_string(path);
+    let mut index = 0;
     match content {
         Ok(v) => {
             let lines = v.split("\n");
+            index += 1;
             for line in lines {
-                if comments.iter().any(|&comment| line.contains(comment)) {
-                    println!("{}", line)
+                if let Some(captures) = re.captures(line) {
+                    let _type = &captures[1];
+                    let _data = &captures[2];
+                    println!("{} {}:{} - {}", _type, file_name ,index, _data)
                 }
             }
         },
