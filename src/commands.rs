@@ -1,7 +1,10 @@
-use regex::Regex;
 use walkdir::WalkDir;
 use std::fs;
 use hf;
+
+use crate::{comments::{self, new_storage}, parser};
+
+// TODO: rewrite notificatoins
 
 fn init_first() {
     println!("chant wasn't initialised. Run chant init");
@@ -39,6 +42,8 @@ pub fn scan() {
     println!("scanning...");
     let skip = &["target", ".git", "node_modules"];
 
+    let mut storage = comments::new_storage();
+
     let mut it = WalkDir::new(".").into_iter();
     while let Some(entry) = it.next(){
         match entry {
@@ -49,33 +54,18 @@ pub fn scan() {
                     continue;
                 }
                 if !e.file_type().is_dir() {
-                    read_file(&e.path().to_string_lossy(),&file_name);
+                    let comments=  parser::parse_file(&e.path().to_string_lossy());
+                    for c in comments {
+                        let not_hash = format!("{}:{}",c.line, c.index);
+                        storage.comments.insert(not_hash, c);
+                    }
                 }
             },
             Err(e) => println!("{}", e),
         }
     }
-}
 
-fn read_file(path: &str, file_name: &str){
-    let re = Regex::new(r"//\s*(TODO|NOTE|FIXME)[:\s]*(.*)").unwrap();
-
-    let content = fs::read_to_string(path);
-    let mut index = 0;
-    match content {
-        Ok(v) => {
-            let lines = v.split("\n");
-            index += 1;
-            for line in lines {
-                if let Some(captures) = re.captures(line) {
-                    let _type = &captures[1];
-                    let _data = &captures[2];
-                    println!("{} {}:{} - {}", _type, file_name ,index, _data)
-                }
-            }
-        },
-        Err(e) => {println!("{}", e); return;}
-    }
+    save_storage(&storage);
 }
 
 pub fn list() {
@@ -86,6 +76,10 @@ pub fn list() {
 
     scan();
     // TODO: read .chant/comments.json file next
+    let s = load_storage();
+    for comment in s.comments {
+        println!("{} {}:{} - {}", comment.1.kind, comment.1.file, comment.1.index, comment.1.line);
+    }
 }
 
 pub fn dismiss() {
@@ -120,5 +114,29 @@ fn remove_from_gitignore() {
             let _ = fs::write(".gitignore", ignore);
         },
         Err(e) => {println!("{}", e); return}
+    }
+}
+
+fn save_storage(storage: &comments::Storage) {
+    let json = serde_json::to_string(storage);
+    match json {
+        Ok(v)=>{let _ = fs::write("./.chant/comments.json", v);},
+        Err(e)=>{println!("{}", e)}
+    }
+}
+
+fn load_storage() -> comments::Storage{
+    let content = fs::read_to_string("./.chant/comments.json");
+    match content {
+        Ok(v) =>{
+            let res: Result<comments::Storage, serde_json::Error >= serde_json::from_str(&v);
+            match res {
+                Ok(sorage) => {
+                    return sorage;
+                },
+                Err(err)=>{println!("{}", err); return new_storage();}
+            }
+        },
+        Err(e)=>{println!("{}", e); return new_storage()}
     }
 }
