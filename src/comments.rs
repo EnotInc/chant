@@ -29,10 +29,11 @@ pub fn new_file(path: String, content: &String) -> File {
 pub struct Comment {
     pub kind: String,
     pub line: String,
+    pub code: String,
     pub index: i32,
     pub hash: u64
 }
 
 pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment{kind: kind, line: line, index: index, hash: hash }
+    return Comment{kind: kind, line: line, index: index, hash: hash, code: "code line parser isn't implemented yet".to_string()}
 }

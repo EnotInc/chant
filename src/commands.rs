@@ -1,5 +1,5 @@
 use walkdir::WalkDir;
-use std::fs;
+use std::{fs, ops::Add};
 use hf;
 
 use crate::{color, comments, config, parser};
@@ -37,8 +37,8 @@ pub fn init(){
 fn is_initialised() -> bool {
     let ex = fs::exists("./.chant");
     match ex {
-        Ok(v)=> return v,
-        Err(e)=> {println!("{}", e); return false;}
+        Ok(v) => return v,
+        Err(e) => {println!("{}", e); return false;}
     }
 }
 
@@ -71,7 +71,7 @@ pub fn scan_force() {
                 if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
-                } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
+                } else if !config.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if config.read.contains(&ext.display().to_string()){
                         let new_file = parser::parse_new_file(path.to_string());
                         new_storage.files.insert(path.to_string(), new_file);
@@ -105,7 +105,7 @@ pub fn scan() {
                     it.skip_current_dir();
                     continue;
                 } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
-                    if config.read.contains(&ext.display().to_string()){
+                    if !config.ignore.contains(&file_name.to_string()) &&  config.read.contains(&ext.display().to_string()){
                         if storage.files.contains_key(&path.to_string()) {
                             let new_file = parser::parse_file(&storage.files[&path.to_string()].clone());
                             new_storage.files.insert(path.to_string(), new_file);
@@ -129,18 +129,26 @@ pub fn list() {
     }
 
     scan();
+
+    let cfg = config::read_config();
+
     let s = load_storage();
-    if s.files.len() == 0 {
-        let nothing = color::paint_str("Nothing".to_string(), color::Color::Red);
-        println!("{nothing} was found");
+    let mut is_empty: bool = true;
+    if s.files.len() == 0 || s.files.is_empty() {
+        nothing_was_found();
         return;
     }
 
     for file in s.files {
         if file.1.comments.len() > 0 {
+            if cfg.with_code {
+                let file = color::paint_str(file.0, color::Color::Cyan);
+                print!("\n== {} == ", file);
+            }
             println!();
         }
         for comment in file.1.comments {
+            is_empty = false;
             let c = comment.1;
 
             let mut kind_color = color::Color::Yellow;
@@ -152,11 +160,26 @@ pub fn list() {
             }
             let kind = color::paint_str(c.kind, kind_color);
             let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
-            let index = color::paint_str(c.index.to_string(), color::Color::Cyan);
-            println!("[{}] {}:{} - {}", kind, path, index, c.line);
+            let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
+
+            if cfg.with_code {
+                println!("[{}] - {}", kind, c.line);
+                println!("{}: {}\n", index, c.code);
+            } else {
+                println!("[{}] {}:{} - {}", kind, path, index, c.line);
+            }
         }
     }
+    if is_empty {
+        nothing_was_found();
+        return;
+    }
     println!();
+}
+
+fn nothing_was_found() {
+    let nothing = color::paint_str("Nothing".to_string(), color::Color::Yellow);
+    println!("{nothing} was found\n");
 }
 
 pub fn print_config() {
@@ -189,8 +212,8 @@ pub fn dismiss() {
 fn is_gitignore_exists() -> bool {
     let ex = fs::exists("./.gitignore");
     match ex {
-        Ok(v)=> return v,
-        Err(e)=> {println!("{}", e); return false;}
+        Ok(v) => return v,
+        Err(e) => {println!("{}", e); return false;}
     }
 }
 
@@ -239,8 +262,8 @@ fn remove_from_gitignore() {
 fn save_storage(storage: &comments::Storage) {
     let json = serde_json::to_string(storage);
     match json {
-        Ok(v)=>{let _ = fs::write("./.chant/storage.json", v);},
-        Err(e)=>{
+        Ok(v) => {let _ = fs::write("./.chant/storage.json", v);},
+        Err(e) => {
             let error = color::paint_str("Error:".to_string(), color::Color::Red);
             println!("{error} unable to save storage\n{e}")
         }
@@ -250,15 +273,15 @@ fn save_storage(storage: &comments::Storage) {
 fn load_storage() -> comments::Storage{
     let content = fs::read_to_string("./.chant/storage.json");
     match content {
-        Ok(v) =>{
+        Ok(v) => {
             let res: Result<comments::Storage, serde_json::Error >= serde_json::from_str(&v);
             match res {
                 Ok(sorage) => {
                     return sorage;
                 },
-                Err(_)=>{return comments::new_storage();}
+                Err(_) => {return comments::new_storage();}
             }
         },
-        Err(e)=>{println!("{}", e); return comments::new_storage()}
+        Err(e) => {println!("{}", e); return comments::new_storage()}
     }
 }
