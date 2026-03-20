@@ -8,15 +8,16 @@ mod config;
 mod color;
 
 fn main() {
-    // TODO: add flags, for example --TODO -t and other
     let args: Vec<String> = env::args().collect();
     if args.len() == 2 {
         let cmd: &str = &args[1];
-        // TODO: add commands 'restart' (dismiss + init) and 'read' to open in code editor (figure out how)
+        // TODO: add command 'read'/'open' to open in code editor (figure out how)
         match cmd  {
            "init" => commands::init(),
            "scan" => commands::scan_force(),
+           "list" => commands::list(),
            "dismiss" => commands::dismiss(),
+           "config" => commands::print_config(),
            _ => commands::unknown_command(),
        }
     } else if args.len() == 1 {

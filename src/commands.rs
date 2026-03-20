@@ -159,6 +159,22 @@ pub fn list() {
     println!();
 }
 
+pub fn print_config() {
+    if !is_initialised(){
+        init_first();
+        return;
+    }
+    let content = fs::read_to_string("./.chant/config.toml");
+    match content {
+        Ok(v) => {
+            let path = color::paint_str("./.chant/config.toml".to_string(), color::Color::Cyan);
+            println!("\n{path}:");
+            println!("{}",v);
+        },
+        Err(_) => {print!("Config wasn't found"); }
+    }
+}
+
 pub fn dismiss() {
     if !is_initialised(){
         init_first();
@@ -188,6 +204,9 @@ fn add_to_gitignore() {
         },
             Err(_) => { return }
         }
+    } else {
+        let warn = color::paint_str("Warning:".to_string(), color::Color::Yellow);
+        println!("{warn} .gitignore is not found")
     }
 }
 
@@ -211,6 +230,9 @@ fn remove_from_gitignore() {
                 return
             }
         }
+    } else {
+        let warn = color::paint_str("Warning:".to_string(), color::Color::Yellow);
+        println!("{warn} .gitignore is not found")
     }
 }
 

@@ -3,14 +3,14 @@ use regex::Regex;
 
 use crate::{comments, hash};
 
-pub fn parse_new_file(path: String) -> comments::File{
+const NOTE_PATTERN: &str = r"//\s*(TODO|NOTE|FIXME)[:\s]*(.*)";
 
-    //TODO: move it to global scope or enum
-    let re = Regex::new(r"//\s*(TODO|NOTE|FIXME)[:\s]*(.*)").unwrap();
+pub fn parse_new_file(path: String) -> comments::File{
 
     let content = fs::read_to_string(&path);
     match content {
         Ok(v) => {
+            let re = Regex::new(NOTE_PATTERN).unwrap();
             let mut new_file = comments::new_file(path, &v);
             let lines = v.split("\n");
             let mut index: i32 = 0;
@@ -32,7 +32,6 @@ pub fn parse_new_file(path: String) -> comments::File{
 }
 
 pub fn parse_file(old_file: &comments::File) -> comments::File{
-    let re = Regex::new(r"//\s*(TODO|NOTE|FIXME)[:\s]*(.*)").unwrap();
 
     let content = fs::read_to_string(old_file.path.to_string());
     match  content {
@@ -41,6 +40,7 @@ pub fn parse_file(old_file: &comments::File) -> comments::File{
             if new_file.hash == old_file.hash {
                 new_file = old_file.clone();
             } else {
+            let re = Regex::new(NOTE_PATTERN).unwrap();
             let lines = v.split("\n");
                 let mut index: i32 = 0;
                 for line in lines {
