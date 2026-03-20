@@ -17,6 +17,7 @@ pub fn create_config() {
     }
 }
 
+// TODO: add .gitignore files into config
 fn new_config() -> Config {
     let default_read: Vec<String> = vec!["rs".to_string(), "go".to_string(), "js".to_string(), "ts".to_string(), "dart".to_string(), "jsx".to_string(), "tsx".to_string(), "c".to_string(), "cpp".to_string(), "h".to_string(), "hpp".to_string(), "java".to_string()];
     let default_ignore: Vec<String> = vec!["target".to_string(), ".git".to_string(), "node_modules".to_string(), ".gitignore".to_string(), "vendor".to_string(), "build".to_string(), ".idea".to_string(), ".vscode".to_string()];
@@ -24,6 +25,7 @@ fn new_config() -> Config {
 }
 
 
+// TODO: let user see and modify config via flags
 pub fn read_config() -> Config {
     let content = fs::read_to_string("./.chant/config.toml");
     match content {

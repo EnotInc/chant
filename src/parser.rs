@@ -1,7 +1,7 @@
 use std::fs;
 use regex::Regex;
 
-use crate::{comments::{self, new_file}, hash};
+use crate::{comments, hash};
 
 pub fn parse_new_file(path: String) -> comments::File{
 
@@ -26,7 +26,7 @@ pub fn parse_new_file(path: String) -> comments::File{
             return new_file;
         },
         Err(_) => {
-            return new_file(path, &String::new());
+            return comments::new_file(path, &String::new());
         }
     }
 }
