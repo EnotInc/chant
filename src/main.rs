@@ -2,10 +2,15 @@ use std::env;
 
 mod commands;
 mod parser;
-mod comments;
+mod storage;
 mod hash;
 mod config;
 mod color;
+
+// Examples of
+// NOTE: foo
+// TODO: bar
+// FIXME: baz
 
 fn main() {
     let args: Vec<String> = env::args().collect();
