@@ -8,9 +8,9 @@ mod config;
 mod color;
 
 // Examples of
-// NOTE: foo
-// TODO: bar
-// FIXME: baz
+// NOTE: some note
+// TODO: this is todo
+// FIXME: and here is a fixme
 
 fn main() {
     let args: Vec<String> = env::args().collect();

@@ -26,11 +26,9 @@ pub fn init(){
     }
 
     add_to_gitignore();
-
-    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
-
     scan_force();
 
+    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
     println!("{chant} was initialised successfully");
 }
 
@@ -151,9 +149,12 @@ pub fn list() {
             println!();
         }
 
-        for comment in file.1.comments {
+        let mut coms: Vec<_> = file.1.comments.iter().collect();
+        coms.sort_by(|a, b| a.1.index.cmp(&b.1.index));
+
+        for (_, comment) in coms {
             is_empty = false;
-            let c: storage::Comment = comment.1;
+            let c: storage::Comment = comment.clone();
 
             let mut kind_color = color::Color::Yellow;
             match c.kind.as_str() {
