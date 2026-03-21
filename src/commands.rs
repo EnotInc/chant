@@ -198,6 +198,21 @@ pub fn print_config() {
     }
 }
 
+pub fn reset(){
+    if !is_initialised(){
+        init_first();
+        return;
+    }
+
+    remove_from_gitignore();
+    add_to_gitignore();
+    config::create_config();
+    scan_force();
+
+    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
+    println!("{chant} is restarted");
+}
+
 pub fn dismiss() {
     if !is_initialised(){
         init_first();

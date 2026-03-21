@@ -18,6 +18,7 @@ fn main() {
             "list" => commands::list(),
             "dismiss" => commands::dismiss(),
             "config" => commands::print_config(),
+            "reset" => commands::reset(),
             _ => commands::unknown_command(),
         }
     } else if args.len() == 1 {
