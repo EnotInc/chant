@@ -112,7 +112,7 @@ pub fn scan() {
                             file = storage::new_file(path.to_string());
                         }
 
-                        file = parser::parse_file(&file, true);
+                        file = parser::parse_file(&file, false);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
