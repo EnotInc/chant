@@ -72,7 +72,7 @@ pub fn scan_force() {
                 } else if !config.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if config.read.contains(&ext.display().to_string()){
                         let mut file = storage::new_file(path.to_string());
-                        file = parser::parse_file(&file, false);
+                        file = parser::parse_file(&file, false, config.with_code);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -80,7 +80,7 @@ pub fn scan_force() {
             Err(e) => println!("unable to scan: {}", e),
         }
     }
-    save_storage(&new_storage);
+    storage::save_storage(&new_storage);
 }
 
 pub fn scan() {
@@ -91,7 +91,7 @@ pub fn scan() {
 
     let config = config::read_config();
 
-    let storage = load_storage();
+    let storage = storage::load_storage();
     let mut new_storage = storage::new_storage();
 
     let mut it = WalkDir::new(".").into_iter();
@@ -112,7 +112,7 @@ pub fn scan() {
                             file = storage::new_file(path.to_string());
                         }
 
-                        file = parser::parse_file(&file, false);
+                        file = parser::parse_file(&file, false, config.with_code);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -120,7 +120,7 @@ pub fn scan() {
             Err(e) => println!("unable to scan: {}", e),
         }
     }
-    save_storage(&new_storage);
+    storage::save_storage(&new_storage);
 }
 
 pub fn list() {
@@ -133,7 +133,7 @@ pub fn list() {
 
     let cfg = config::read_config();
 
-    let s = load_storage();
+    let s = storage::load_storage();
     let mut is_empty: bool = true;
     if s.files.len() == 0 || s.files.is_empty() {
         nothing_was_found();
@@ -261,32 +261,5 @@ fn remove_from_gitignore() {
     } else {
         let warn = color::paint_str("Warning:".to_string(), color::Color::Yellow);
         println!("{warn} .gitignore is not found")
-    }
-}
-
-fn save_storage(storage: &storage::Storage) {
-    let json = serde_json::to_string(storage);
-    match json {
-        Ok(v) => { let _ = fs::write("./.chant/storage.json", v); },
-        Err(e) => {
-            let error = color::paint_str("Error:".to_string(), color::Color::Red);
-            println!("{error} unable to save storage\n{e}")
-        }
-    }
-}
-
-fn load_storage() -> storage::Storage{
-    let content = fs::read_to_string("./.chant/storage.json");
-    match content {
-        Ok(v) => {
-            let res: Result<storage::Storage, serde_json::Error >= serde_json::from_str(&v);
-            match res {
-                Ok(sorage) => {
-                    return sorage;
-                },
-                Err(_) => { return storage::new_storage(); }
-            }
-        },
-        Err(e) => { println!("{}", e); return storage::new_storage() }
     }
 }

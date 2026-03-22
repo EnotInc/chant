@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::hash;
+use crate::{hash, color};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Storage {
@@ -19,7 +19,7 @@ pub fn new_storage() -> Storage {
 pub struct File {
     pub hash: u64,
     pub path: String,
-    pub comments: HashMap<String, Comment>
+    pub comments: HashMap<u64, Comment>
 }
 
 pub fn new_file(path: String) -> File {
@@ -43,5 +43,32 @@ pub struct Comment {
 }
 
 pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment{kind: kind, line: line, index: index, hash: hash, code: "code line parser isn't implemented yet".to_string()}
+    return Comment{kind: kind, line: line, index: index, hash: hash, code: String::new()}
+}
+
+pub fn save_storage(storage: &Storage) {
+    let json = serde_json::to_string(storage);
+    match json {
+        Ok(v) => { let _ = fs::write("./.chant/storage.json", v); },
+        Err(e) => {
+            let error = color::paint_str("Error:".to_string(), color::Color::Red);
+            println!("{error} unable to save storage\n{e}")
+        }
+    }
+}
+
+pub fn load_storage() -> Storage{
+    let content = fs::read_to_string("./.chant/storage.json");
+    match content {
+        Ok(v) => {
+            let res: Result<Storage, serde_json::Error >= serde_json::from_str(&v);
+            match res {
+                Ok(sorage) => {
+                    return sorage;
+                },
+                Err(_) => { return new_storage(); }
+            }
+        },
+        Err(e) => { println!("{}", e); return new_storage() }
+    }
 }
