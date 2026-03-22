@@ -72,7 +72,7 @@ pub fn scan_force() {
                 } else if !config.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if config.read.contains(&ext.display().to_string()){
                         let mut file = storage::new_file(path.to_string());
-                        file = parser::parse_file(&file);
+                        file = parser::parse_file(&file, false);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -112,7 +112,7 @@ pub fn scan() {
                             file = storage::new_file(path.to_string());
                         }
 
-                        file = parser::parse_file(&file);
+                        file = parser::parse_file(&file, true);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -201,21 +201,6 @@ pub fn print_config() {
         },
         Err(_) => { print!("Config wasn't found"); }
     }
-}
-
-pub fn reset(){
-    if !is_initialised() {
-        init_first();
-        return;
-    }
-
-    remove_from_gitignore();
-    add_to_gitignore();
-    config::create_config();
-    scan_force();
-
-    let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
-    println!("{chant} is restarted");
 }
 
 pub fn dismiss() {
