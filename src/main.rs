@@ -24,6 +24,7 @@ fn main() {
             "dismiss" => commands::dismiss::dismiss(),
             "config" => commands::config::print_config(),
             "help" => commands::general::help(),
+            "reset" => commands::general::reset(),
             _ => commands::general::unknown_command(),
         }
     } else if args.len() == 1 {

@@ -1,5 +1,7 @@
-use crate::color;
+use crate::{color, commands::scan::scan_force};
 use std::fs;
+
+use crate::config;
 
 pub fn help() {
     let chant = color::paint_str("chant".to_string(), color::Color::Yellow);
@@ -62,4 +64,19 @@ pub fn unknown_command() {
     let error = color::paint_str("Error:".to_string(), color::Color::Red);
     let chant_help = color::paint_str("chant help".to_string(), color::Color::Yellow);
     println!("{error} unknown command. Run {chant_help} to get more information");
+}
+
+pub fn reset() {
+    if !is_initialized() {
+        init_first();
+        return;
+    }
+    config::create_config();
+    scan_force();
+
+    let chant = color::paint_str("Chant".to_string(), color::Color::Green);
+    let config_dir = color::paint_str(".chant/config.toml".to_string(), color::Color::Cyan);
+    let storage_dir = color::paint_str(".chant/storage.json".to_string(), color::Color::Cyan);
+
+    println!(" {chant} was reset!\n {config_dir} is set to default\n {storage_dir} is updated\n");
 }
