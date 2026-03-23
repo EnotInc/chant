@@ -1,5 +1,7 @@
+use std::ops::Add;
+
 use walkdir::WalkDir;
-use crate::{config, commands::general, storage, parser};
+use crate::{config, commands::general, storage, parser, color};
 
 pub fn scan_force() {
     if !general::is_initialized(){
@@ -32,6 +34,51 @@ pub fn scan_force() {
         }
     }
     storage::save_storage(&new_storage);
+}
+
+pub fn scan_hollow() {
+    let config = config::new_config();
+    
+    let mut it = WalkDir::new(".").into_iter();
+    while let Some(entry) = it.next() {
+        match entry {
+            Ok(e) => {
+                let file_name = e.file_name().to_string_lossy();
+                let path = &e.path().to_string_lossy();
+                if e.file_type().is_dir() && config.files.ignore.contains(&file_name.to_string()) {
+                    it.skip_current_dir();
+                    continue;
+                } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
+                    if config.files.read.contains(&ext.display().to_string()){
+                        let mut file = storage::new_file(path.to_string());
+                        file = parser::parse_file(&file, true);
+
+                        if !file.comments.is_empty() {
+                            println!();
+                            let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
+                            println!(" == {} ==", path);
+
+                            for com in file.comments {
+                                let mut kind_color = color::Color::Yellow;
+                                match com.1.kind.as_str() {
+                                    "TODO" => kind_color = color::Color::Blue,
+                                    "NOTE" => kind_color = color::Color::Green,
+                                    "FIXME" => kind_color = color::Color::Red,
+                                    _ => {}
+                                }
+                                //let id = color::paint_str(c.id, color::Color::Yellow);
+                                let kind = color::paint_str(com.1.kind, kind_color);
+                                let index = color::paint_str(com.1.index.add(1).to_string(), color::Color::Cyan);
+
+                                println!(" {}: [{}] - {}", index, kind, com.1.line);
+                            }
+                        }
+                    }
+                }
+            },
+            Err(e) => println!("unable to scan: {}", e),
+        }
+    }
 }
 
 pub fn scan() {

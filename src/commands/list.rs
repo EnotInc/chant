@@ -4,7 +4,7 @@ use crate::{color, storage, commands::general, commands::scan};
 
 pub fn list() {
     if !general::is_initialized(){
-        general::help();
+        general::init_first();
         return; 
     }
 
