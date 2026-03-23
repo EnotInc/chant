@@ -1,12 +1,11 @@
-//use std::{fs, io::Read};
 use std::fs;
-//use regex::Regex;
+use regex::Regex;
 
 use crate::{hash, storage};
 
-//const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
+const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
 
-pub fn parse_file(file: &storage::File, compare_hash: bool, with_code: bool) -> storage::File{
+pub fn parse_file(file: &storage::File, compare_hash: bool) -> storage::File {
     let content = fs::read_to_string(file.path.to_string());
     match  content {
         Ok(v) => {
@@ -16,18 +15,9 @@ pub fn parse_file(file: &storage::File, compare_hash: bool, with_code: bool) -> 
             } else {
                 let lines = v.split("\n");
                 let mut index: i32 = 0;
-                let mut keep: bool = false;
                 for line in lines {
                     index += 1;
-                    if keep && with_code {
-                            if !line.trim().starts_with("//") {
-                                save_code(&mut new_file, line, index);
-                                keep = false;
-                                continue;
-                            }
-                    }
-                    //keep = find_comment_with_regex(file, line, index, &mut new_file, with_code)
-                    keep = parse_line(file, line, index, &mut new_file, with_code)
+                    parse_comments(file, line, index, &mut new_file);
                 }
             }
             return new_file;
@@ -36,60 +26,16 @@ pub fn parse_file(file: &storage::File, compare_hash: bool, with_code: bool) -> 
     }
 }
 
-// fn find_comment_with_regex(file: &storage::File, line: &str, index: i32 ,new_file: &mut storage::File, with_code: bool) -> bool {
-//     let re = Regex::new(COMMENT_PATTERN).unwrap();
-//     if let Some(captures) = re.captures(line) {
-//         let new_line_hash = hash::get_hash(&line.to_string());
-//         if file.comments.contains_key(&new_line_hash) {
-//             let a = &file.comments[&new_line_hash];
-//             new_file.comments.insert(new_line_hash,a.clone());
-//         } else {
-//             let c = storage::new_comment(captures[1].to_string(), captures[2].to_string(), index, new_line_hash);
-//             new_file.comments.insert(new_line_hash, c);
-//         }
-//         return true && with_code;
-//     }
-//     return false;
-// }
-
-fn parse_line(file: &storage::File, line: &str, index: i32 ,new_file: &mut storage::File, with_code: bool) -> bool {
-    if line.starts_with("//") {
+fn parse_comments(file: &storage::File, line: &str, index: i32 ,new_file: &mut storage::File) {
+    let re = Regex::new(COMMENT_PATTERN).unwrap();
+    if let Some(captures) = re.captures(line) {
         let new_line_hash = hash::get_hash(&line.to_string());
         if file.comments.contains_key(&new_line_hash) {
             let a = &file.comments[&new_line_hash];
             new_file.comments.insert(new_line_hash,a.clone());
         } else {
-            let mut byte_line = line.as_bytes()[2..].trim_ascii();
-            let mut kind: &str = "";
-            if byte_line.starts_with("TODO".as_bytes()) {
-                kind = "TODO";
-            }
-            if byte_line.starts_with("NOTE".as_bytes()) {
-                kind = "NOTE";
-            }
-            if byte_line.starts_with("FIXME".as_bytes()) {
-                kind = "FIXME";
-            }
-            if kind == "" || kind.is_empty(){
-                return false;
-            }
-            let l = kind.len();
-            byte_line = &byte_line[l..];
-            let c = storage::new_comment(kind.to_string(), String::from_utf8_lossy(byte_line).to_string(), index, new_line_hash);
+            let c = storage::new_comment(captures[1].to_string(), captures[2].to_string(), index, new_line_hash);
             new_file.comments.insert(new_line_hash, c);
         }
-        return true && with_code;
-    }
-    return false;
-}
-
-
-fn save_code(new_file: &mut storage::File, line: &str, index: i32) {
-    let comment = new_file.comments.iter_mut().find(|(_, value)| value.index == index-1);
-    match comment {
-        Some(c) => {
-            c.1.code = line.trim().to_string();
-        },
-        None => {}
     }
 }

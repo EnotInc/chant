@@ -72,7 +72,7 @@ pub fn scan_force() {
                 } else if !config.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if config.read.contains(&ext.display().to_string()){
                         let mut file = storage::new_file(path.to_string());
-                        file = parser::parse_file(&file, false, config.with_code);
+                        file = parser::parse_file(&file, false);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -112,7 +112,7 @@ pub fn scan() {
                             file = storage::new_file(path.to_string());
                         }
 
-                        file = parser::parse_file(&file, false, config.with_code);
+                        file = parser::parse_file(&file, false);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -131,8 +131,6 @@ pub fn list() {
 
     scan();
 
-    let cfg = config::read_config();
-
     let s = storage::load_storage();
     let mut is_empty: bool = true;
     if s.files.len() == 0 || s.files.is_empty() {
@@ -142,11 +140,9 @@ pub fn list() {
 
     for file in s.files {
         if file.1.comments.len() > 0 {
-            if cfg.with_code {
-                let file = color::paint_str(file.0, color::Color::Cyan);
-                print!("\n== {} == ", file);
-            }
             println!();
+            let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
+            println!(" == {} ==", path);
         }
 
         let mut coms: Vec<_> = file.1.comments.iter().collect();
@@ -164,15 +160,9 @@ pub fn list() {
                 _ => {}
             }
             let kind = color::paint_str(c.kind, kind_color);
-            let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
             let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
 
-            if cfg.with_code {
-                println!("[{}] - {}", kind, c.line);
-                println!("{}: {}\n", index, c.code);
-            } else {
-                println!("[{}] {}:{} - {}", kind, path, index, c.line);
-            }
+            println!(" {}: [{}] - {}", index, kind, c.line);
         }
     }
     if is_empty {
