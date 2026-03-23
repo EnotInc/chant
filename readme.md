@@ -2,7 +2,7 @@
 
 ## About
 Chant is a little cli tool to work with TODO, NOTE and FIXME comments.
-Comment search is optimized tiwh hash checking
+Comment search is optimized with hash checking
 
 ## Usage
 
@@ -21,9 +21,9 @@ Comment search is optimized tiwh hash checking
 
 ### Config
 
-Now in `.chant/config.toml` chant store 2 lists:
+Now in `.chant/config.toml` chant stores 2 lists:
 1. list of supported files (extetions)
-2. list of ignored dirs
+2. list of ignored directories
 
 You can modify both of this, but be careful, chant **doesn't** supports languages, where comments are not started with `//`. I'll add this later
 
