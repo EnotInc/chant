@@ -35,9 +35,12 @@ pub fn read_config() -> Config {
     let content = fs::read_to_string("./.chant/config.toml");
     match content {
         Ok(v) => {
-            let _cfg: Config = toml::from_str(&v).unwrap();
-            return _cfg;
+            let _cfg = toml::from_str(&v);
+            match _cfg {
+                Ok(v) => { return v; }
+                Err(e) => { println!("Unable to read config, getting a default one instead.\n{e}"); return new_config() }
+            }
         },
-        Err(_) => {print!("getting new config"); return new_config() }
+        Err(e) => { println!("Unable to read config, getting a default one instead.\n{e}"); return new_config() }
     }
 }

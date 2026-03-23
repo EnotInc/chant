@@ -131,7 +131,7 @@ pub fn scan() {
                     it.skip_current_dir();
                     continue;
                 } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
-                    if !config.files.ignore.contains(&file_name.to_string()) &&  config.files.ignore.contains(&ext.display().to_string()){
+                    if !config.files.ignore.contains(&file_name.to_string()) &&  config.files.read.contains(&ext.display().to_string()){
                         let mut file: storage::File;
                         if storage.files.contains_key(&path.to_string()) {
                             file = storage.files[&path.to_string()].clone();
@@ -139,7 +139,7 @@ pub fn scan() {
                             file = storage::new_file(path.to_string());
                         }
 
-                        file = parser::parse_file(&file, false);
+                        file = parser::parse_file(&file, true);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
