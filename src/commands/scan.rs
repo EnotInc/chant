@@ -23,7 +23,7 @@ pub fn scan_force() {
                 } else if !config.files.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if config.files.read.contains(&ext.display().to_string()){
                         let mut file = storage::new_file(path.to_string());
-                        file = parser::parse_file(&file, false);
+                        file = parser::parse_file(&file, true);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }
@@ -57,13 +57,15 @@ pub fn scan() {
                 } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
                     if !config.files.ignore.contains(&file_name.to_string()) &&  config.files.read.contains(&ext.display().to_string()){
                         let mut file: storage::File;
+                        let mut new = false;
                         if storage.files.contains_key(&path.to_string()) {
                             file = storage.files[&path.to_string()].clone();
                         } else {
                             file = storage::new_file(path.to_string());
+                            new = true;
                         }
 
-                        file = parser::parse_file(&file, true);
+                        file = parser::parse_file(&file, new);
                         new_storage.files.insert(path.to_string(), file);
                     }
                 }

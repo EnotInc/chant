@@ -5,12 +5,12 @@ use crate::{hash, storage};
 
 const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
 
-pub fn parse_file(file: &storage::File, compare_hash: bool) -> storage::File {
+pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
     let content = fs::read_to_string(file.path.to_string());
     match  content {
         Ok(v) => {
             let mut new_file = storage::new_file(file.path.to_string());
-            if new_file.hash == file.hash && compare_hash {
+            if !is_new_file && new_file.hash == file.hash {
                 new_file = file.clone();
             } else {
                 let lines = v.split("\n");
@@ -26,7 +26,7 @@ pub fn parse_file(file: &storage::File, compare_hash: bool) -> storage::File {
     }
 }
 
-fn parse_comments(file: &storage::File, line: &str, index: i32 ,new_file: &mut storage::File) {
+fn parse_comments(file: &storage::File, line: &str, index: i32, new_file: &mut storage::File) {
     let re = Regex::new(COMMENT_PATTERN).unwrap();
     if let Some(captures) = re.captures(line) {
         let new_line_hash = hash::get_hash(&line.to_string());
