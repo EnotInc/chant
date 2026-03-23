@@ -35,6 +35,7 @@ pub fn new_file(path: String) -> File {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Comment {
+    pub id: String,
     pub kind: String,
     pub line: String,
     pub code: String,
@@ -43,7 +44,11 @@ pub struct Comment {
 }
 
 pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment{kind: kind, line: line, index: index, hash: hash, code: String::new()}
+    return Comment{kind: kind, line: line, index: index, hash: hash, code: String::new(), id: get_id(hash)}
+}
+
+fn get_id(hash: u64) -> String {
+    return hash.to_string()[0..6].to_string();
 }
 
 pub fn save_storage(storage: &Storage) {

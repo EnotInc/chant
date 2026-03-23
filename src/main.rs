@@ -18,17 +18,17 @@ fn main() {
         let cmd: &str = &args[1];
         // TODO: add command 'read'/'open' to open in code editor (figure out how)
         match cmd  {
-            "init" => commands::init(),
-            "scan" => commands::scan_force(),
-            "list" => commands::list(),
-            "dismiss" => commands::dismiss(),
-            "config" => commands::print_config(),
-            "help" => commands::help(),
-            _ => commands::unknown_command(),
+            "init" => commands::init::init(),
+            "scan" => commands::scan::scan_force(),
+            "list" => commands::list::list(),
+            "dismiss" => commands::dismiss::dismiss(),
+            "config" => commands::config::print_config(),
+            "help" => commands::general::help(),
+            _ => commands::general::unknown_command(),
         }
     } else if args.len() == 1 {
-        commands::list();
+        commands::list::list();
     } else {
-        commands::bad_syntax();
+        commands::general::bad_syntax();
     }
 }
