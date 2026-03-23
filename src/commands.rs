@@ -93,11 +93,11 @@ pub fn scan_force() {
             Ok(e) => {
                 let file_name = e.file_name().to_string_lossy();
                 let path = &e.path().to_string_lossy();
-                if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
+                if e.file_type().is_dir() && config.files.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
-                } else if !config.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
-                    if config.read.contains(&ext.display().to_string()){
+                } else if !config.files.ignore.contains(&file_name.to_string()) && !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
+                    if config.files.read.contains(&ext.display().to_string()){
                         let mut file = storage::new_file(path.to_string());
                         file = parser::parse_file(&file, false);
                         new_storage.files.insert(path.to_string(), file);
@@ -127,11 +127,11 @@ pub fn scan() {
             Ok(e) => {
                 let file_name = e.file_name().to_string_lossy();
                 let path = &e.path().to_string_lossy();
-                if e.file_type().is_dir() && config.ignore.contains(&file_name.to_string()) {
+                if e.file_type().is_dir() && config.files.ignore.contains(&file_name.to_string()) {
                     it.skip_current_dir();
                     continue;
                 } else if !e.file_type().is_dir() && let Some(ext) = e.path().extension() {
-                    if !config.ignore.contains(&file_name.to_string()) &&  config.read.contains(&ext.display().to_string()){
+                    if !config.files.ignore.contains(&file_name.to_string()) &&  config.files.ignore.contains(&ext.display().to_string()){
                         let mut file: storage::File;
                         if storage.files.contains_key(&path.to_string()) {
                             file = storage.files[&path.to_string()].clone();
