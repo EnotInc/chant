@@ -23,6 +23,7 @@ fn main() {
             "list" => commands::list(),
             "dismiss" => commands::dismiss(),
             "config" => commands::print_config(),
+            "help" => commands::help(),
             _ => commands::unknown_command(),
         }
     } else if args.len() == 1 {
