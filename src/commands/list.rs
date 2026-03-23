@@ -38,12 +38,10 @@ pub fn list() {
                 "FIXME" => kind_color = color::Color::Red,
                 _ => {}
             }
-            //let id = color::paint_str(c.id, color::Color::Yellow);
             let kind = color::paint_str(c.kind, kind_color);
             let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
 
             println!(" {}: [{}] - {}", index, kind, c.line);
-            //println!(" {} | {}: [{}] - {}", id, index, kind, c.line);
         }
     }
     if is_empty {

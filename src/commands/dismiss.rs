@@ -23,6 +23,7 @@ fn remove_from_gitignore() {
                 for line in lines {
                     if line != ".chant" {
                         ignore.push_str(line); 
+                        ignore.push_str("\n"); 
                     }
                 }
                 let _ = fs::write(".gitignore", ignore);

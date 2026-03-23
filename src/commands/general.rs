@@ -19,7 +19,8 @@ pub fn nothing_was_found() {
 pub fn init_first() {
     let error = color::paint_str("Error:".to_string(), color::Color::Red);
     let chant_init = color::paint_str("chant init".to_string(), color::Color::Yellow);
-    println!("{error} chant wasn't initialized. Run {chant_init} first");
+    let chant_run_hollow = color::paint_str("chant --hollow".to_string(), color::Color::Yellow);
+    println!("{error} chant wasn't initialized. Run {chant_init} first, or use {chant_run_hollow} to run chant without initialization");
 }
 
 pub fn is_initialized() -> bool {
