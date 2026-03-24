@@ -35,7 +35,7 @@ enum Cmds {
     /// creates .chant/ directory with .chant/config.toml and .chant/storage.josn files
     Init {},
 
-    /// force chant to scan directory
+    /// force chant to scan directory without hash checking
     Scan {},
     
     /// display all saved comments (default command)

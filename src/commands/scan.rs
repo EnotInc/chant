@@ -70,9 +70,9 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                             file = parser::parse_file(&file, true);
 
                             if !file.comments.is_empty() {
-                                println!();
                                 let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
-                                println!(" == {} ==", path);
+                                let mut file_data: String = String::new();
+
 
                                 for com in file.comments {
                                     if !((com.1.kind == "TODO" && (any || todo)) ||
@@ -90,7 +90,13 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                                     let kind = color::paint_str(com.1.kind, kind_color);
                                     let index = color::paint_str(com.1.index.add(1).to_string(), color::Color::Cyan);
 
-                                    println!(" {}: [{}] - {}", index, kind, com.1.line);
+                                    file_data += &format!(" {}: [{}] - {}", index, kind, com.1.line);
+                                }
+
+                                if !file_data.is_empty() {
+                                    println!();
+                                    println!(" == {} ==", path);
+                                    println!("{}", file_data);
                                 }
                             }
                         }

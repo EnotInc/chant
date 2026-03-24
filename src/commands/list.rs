@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::{ops::Add};
 
 use crate::{color, storage, commands::general, commands::scan, commands::task};
 
@@ -26,10 +26,9 @@ pub fn list(todo: bool, note: bool, fixme: bool) {
     }
 
     for file in s.files {
-        if file.1.comments.len() > 0 {
-            println!();
-            let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
-            println!(" == {} ==", path);
+        let mut file_data: String = String::new();
+        if file.1.comments.is_empty() {
+            continue;
         }
 
         let mut coms: Vec<_> = file.1.comments.iter().collect();
@@ -53,7 +52,15 @@ pub fn list(todo: bool, note: bool, fixme: bool) {
             let kind = color::paint_str(c.kind, kind_color);
             let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
 
-            println!(" {}: [{}] - {}", index, kind, c.line);
+            file_data += &format!(" {}: [{}] - {}", index, kind, c.line);
+
+        }
+        if !file_data.is_empty() {
+            let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
+                println!();
+                println!(" == {} ==", path);
+                println!("{}", file_data);
+
         }
     }
     if is_empty {
