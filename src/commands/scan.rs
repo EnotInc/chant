@@ -70,7 +70,6 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                             file = parser::parse_file(&file, true);
 
                             if !file.comments.is_empty() {
-                                let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
                                 let mut file_data: String = String::new();
 
 
@@ -90,13 +89,14 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                                     let kind = color::paint_str(com.1.kind, kind_color);
                                     let index = color::paint_str(com.1.index.add(1).to_string(), color::Color::Cyan);
 
-                                    file_data += &format!(" {}: [{}] - {}", index, kind, com.1.line);
+                                    file_data += &format!(" {}: [{}] - {}\n", index, kind, com.1.line);
                                 }
 
                                 if !file_data.is_empty() {
                                     println!();
+                                    let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
                                     println!(" == {} ==", path);
-                                    println!("{}", file_data);
+                                    print!("{}", file_data);
                                 }
                             }
                         }

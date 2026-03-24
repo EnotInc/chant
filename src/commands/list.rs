@@ -52,15 +52,14 @@ pub fn list(todo: bool, note: bool, fixme: bool) {
             let kind = color::paint_str(c.kind, kind_color);
             let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
 
-            file_data += &format!(" {}: [{}] - {}", index, kind, c.line);
+            file_data += &format!(" {}: [{}] - {}\n", index, kind, c.line);
 
         }
         if !file_data.is_empty() {
             let path = color::paint_str(file.1.path.to_string(), color::Color::Cyan);
-                println!();
-                println!(" == {} ==", path);
-                println!("{}", file_data);
-
+            println!();
+            println!(" == {} ==", path);
+            print!("{}", file_data);
         }
     }
     if is_empty {
