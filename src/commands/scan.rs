@@ -10,7 +10,9 @@ pub fn scan_force() {
     }
 
     let config = config::read_config();
+    let tasks = storage::load_storage().tasks;
     let mut new_storage = storage::new_storage();
+    new_storage.tasks = tasks;
 
     let home_path = Path::new(".");
     let walker = WalkBuilder::new(home_path)
@@ -103,7 +105,10 @@ pub fn scan() {
 
     let config = config::read_config();
     let storage = storage::load_storage();
+    let tasks = storage.tasks;
     let mut new_storage = storage::new_storage();
+    new_storage.tasks = tasks;
+
 
     let home_path = Path::new(".");
     let walker = WalkBuilder::new(home_path)

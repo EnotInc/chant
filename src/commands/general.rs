@@ -31,17 +31,11 @@ pub fn is_initialized() -> bool {
     }
 }
 
-// pub fn bad_syntax() {
-//     let error = color::paint_str("Error:".to_string(), color::Color::Red);
-//     let chant_help = color::paint_str("chant help".to_string(), color::Color::Yellow);
-//     println!("{error} bad syntax. Run {chant_help} to get more information");
-// }
-
-// pub fn unknown_command() {
-//     let error = color::paint_str("Error:".to_string(), color::Color::Red);
-//     let chant_help = color::paint_str("chant help".to_string(), color::Color::Yellow);
-//     println!("{error} unknown command. Run {chant_help} to get more information");
-// }
+pub fn bad_syntax() {
+    let error = color::paint_str("Error:".to_string(), color::Color::Red);
+    let chant_help = color::paint_str("chant --help".to_string(), color::Color::Yellow);
+    println!("{error} bad syntax. Run {chant_help} to get more information");
+}
 
 pub fn reset() {
     if !is_initialized() {

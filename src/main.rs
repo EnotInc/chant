@@ -37,6 +37,33 @@ enum Cmds {
 
     /// reset confign to the default and run forced scan
     Reset {},
+
+    /// Global tasks in the project
+    Task {
+        #[command(subcommand)]
+        option: Option<TaskOpt>,
+    }
+}
+
+#[derive(Subcommand, Clone)]
+enum TaskOpt {
+    /// add new task with "message"
+    Add {
+        message: String
+    },
+    /// mark task as "done" by id
+    Done {
+        id: String
+    },
+    /// remove task
+    Remove {
+        #[arg(long)]
+        /// remove all of the tasks
+        all: bool,
+
+        /// remove one task by id
+        id: Option<String>,
+    },
 }
 
 // Examples of
@@ -58,6 +85,23 @@ fn main() {
         Some(Cmds::Dismiss { }) => commands::dismiss::dismiss(),
         Some(Cmds::Config { }) => commands::config::print_config(),
         Some(Cmds::Reset { }) => commands::general::reset(),
+        Some(Cmds::Task { option }) => {
+            match option {
+                Some(TaskOpt::Add { message }) => { commands::task::add_task(message) }
+                Some(TaskOpt::Done { id }) => { commands::task::done_task(id); }
+                Some(TaskOpt::Remove { all, id }) => {
+                    if all {
+                        commands::task::remove_all();
+                    } else {
+                        match id {
+                            Some(v) => commands::task::remove_task(v),
+                            None => commands::general::bad_syntax(),
+                        }
+                    }
+                }
+                None => { commands::task::print_tasks(); }
+            }
+        },
         None => commands::list::list(),
     }
 }

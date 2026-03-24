@@ -4,3 +4,4 @@ pub mod general;
 pub mod list;
 pub mod init;
 pub mod scan;
+pub mod task;
