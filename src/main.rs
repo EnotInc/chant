@@ -100,7 +100,7 @@ enum TaskOpt {
         all: bool,
 
         /// remove one task by id
-        id: Option<String>,
+        id: Option<Vec<String>>,
     },
 }
 

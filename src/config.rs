@@ -29,7 +29,6 @@ pub fn new_config() -> Config {
 }
 
 
-// TODO: let user see and modify config via flags
 pub fn read_config() -> Config {
     let content = fs::read_to_string("./.chant/config.toml");
     match content {
