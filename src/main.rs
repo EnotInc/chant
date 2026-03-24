@@ -87,6 +87,12 @@ enum TaskOpt {
     Done {
         id: String
     },
+
+    /// edit task message
+    Edit {
+        id: String
+    },
+
     /// remove task
     Remove {
         #[arg(long)]
@@ -117,7 +123,7 @@ fn main() {
             commands::scan::scan_hollow(cli.todo, cli.note, cli.fixme);
             return;
         } else {
-            commands::list::list(cli.todo, cli.note, cli.fixme);
+            commands::list::list(cli.todo, cli.note, cli.fixme, cli.both);
             if cli.both {
                 commands::list::list_both();
                 return;
@@ -128,7 +134,7 @@ fn main() {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::List { both, todo, note, fixme}) => {
-            commands::list::list(todo, note, fixme);
+            commands::list::list(todo, note, fixme, both);
             if both {
                 commands::list::list_both();
             }
@@ -140,6 +146,7 @@ fn main() {
             match option {
                 Some(TaskOpt::Add { message }) => { commands::task::add_task(message) }
                 Some(TaskOpt::Done { id }) => { commands::task::done_task(id); }
+                Some(TaskOpt::Edit { id }) => { commands::task::edit_task(id); }
                 Some(TaskOpt::Remove { all, id }) => {
                     if all {
                         commands::task::remove_all();
@@ -153,6 +160,6 @@ fn main() {
                 None => { commands::task::print_tasks(); }
             }
         },
-        None => commands::list::list(true, true, true),
+        None => commands::list::list(true, true, true, false),
     }
 }

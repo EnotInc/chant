@@ -10,7 +10,7 @@ pub fn list_both() {
     task::print_tasks();
 }
 
-pub fn list(todo: bool, note: bool, fixme: bool) {
+pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
     if !general::is_initialized(){
         general::init_first();
         return; 
@@ -69,4 +69,8 @@ pub fn list(todo: bool, note: bool, fixme: bool) {
         return;
     }
     println!();
+    if !s.tasks.is_empty() && !is_both {
+        let t = color::paint_str("~~~".to_string(), color::Color::Blue);
+        println!(" {}", t);
+    }
 }
