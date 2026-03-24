@@ -1,7 +1,7 @@
 use std::{ops::Add, path::Path};
 
 use ignore::WalkBuilder;
-use crate::{config, commands::general, storage, parser, color};
+use crate::{services::config, commands::general, storage, parser, services::color};
 
 pub fn scan_force() {
     if !general::is_initialized(){

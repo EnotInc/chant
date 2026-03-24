@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{color, commands::general};
+use crate::{services::color, commands::general};
 
 pub fn dismiss() {
     if !general::is_initialized() {

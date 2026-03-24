@@ -1,7 +1,7 @@
 use hf;
 use std::fs;
 
-use crate::{color, config, commands::general, commands::scan};
+use crate::{services::color, services::config, commands::general, commands::scan};
 
 pub fn init(){
     if !general::is_initialized(){

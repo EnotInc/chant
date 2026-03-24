@@ -1,7 +1,5 @@
-use crate::{color, commands::scan::scan_force};
+use crate::{services::color, services::config, commands::scan::scan_force};
 use std::fs;
-
-use crate::config;
 
 pub fn is_gitignore_exists() -> bool {
     let ex = fs::exists("./.gitignore");

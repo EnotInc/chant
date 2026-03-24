@@ -1,7 +1,7 @@
 use std::fs;
 use regex::Regex;
 
-use crate::{hash, storage};
+use crate::{services::hash, storage};
 
 const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
 

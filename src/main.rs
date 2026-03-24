@@ -1,11 +1,9 @@
 use clap::{Parser, Subcommand};
 
 mod commands;
+mod services;
 mod parser;
 mod storage;
-mod hash;
-mod config;
-mod color;
 
 
 #[derive(Parser)]
@@ -113,9 +111,9 @@ fn main() {
     let cli = Cli::parse();
     if cli.todo || cli.note || cli.todo || cli.hollow || cli.both {
         if cli.hollow && cli.both {
-            let error = color::paint_str("Error:".to_string(), color::Color::Red);
-            let hollow = color::paint_str("--hollow".to_string(), color::Color::Yellow);
-            let both = color::paint_str("--both".to_string(), color::Color::Yellow);
+            let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
+            let hollow = services::color::paint_str("--hollow".to_string(), services::color::Color::Yellow);
+            let both = services::color::paint_str("--both".to_string(), services::color::Color::Yellow);
             println!("{error} flag {hollow} can't be used with {both}. Use one or another");
             return;
         }

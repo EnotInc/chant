@@ -1,6 +1,6 @@
 use std::{collections::HashMap, io::{self, Write}};
 
-use crate::{storage, color, commands::general};
+use crate::{storage, services::color, commands::general};
 
 pub fn add_task(text: String) {
     if !general::is_initialized() {

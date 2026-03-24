@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{hash, color};
+use crate::{services::hash, services::color};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Storage {
