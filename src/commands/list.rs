@@ -4,7 +4,9 @@ use crate::{color, storage, commands::general, commands::scan, commands::task};
 
 pub fn list_all() {
     let gt = color::paint_str("Global Tasks".to_string(), color::Color::Blue);
-    println!(" ~~ {} ~~",gt);
+    //println!(" ~~ {} ~~",gt);
+    println!("    {}",gt);
+    println!(" ~~~~~~~~~~~~~~~~~~ ");
     task::print_tasks();
 }
 

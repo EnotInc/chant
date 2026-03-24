@@ -28,6 +28,10 @@ struct Cli {
     /// display only FIXME comments
     #[arg(long, short)]
     fixme: bool,
+
+    /// display both comments and tasks (can't be used with --hollow)
+    #[arg(long)]
+    all: bool,
 }
 
 #[derive(Subcommand, Clone)]
@@ -101,13 +105,23 @@ enum TaskOpt {
 
 fn main() {
     let cli = Cli::parse();
-    if cli.todo || cli.note || cli.todo || cli.hollow {
+    if cli.todo || cli.note || cli.todo || cli.hollow || cli.all {
+        if cli.hollow && cli.all {
+            let error = color::paint_str("Error:".to_string(), color::Color::Red);
+            let hollow = color::paint_str("--hollow".to_string(), color::Color::Yellow);
+            let all = color::paint_str("--all".to_string(), color::Color::Yellow);
+            println!("{error} flag {hollow} can't be used with {all}. Use one or another");
+            return;
+        }
         if cli.hollow {
             commands::scan::scan_hollow(cli.todo, cli.note, cli.fixme);
             return;
         } else {
             commands::list::list(cli.todo, cli.note, cli.fixme);
-            return
+            if cli.all {
+                commands::list::list_all();
+                return;
+            }
         }
     }
     match cli.cmd {
