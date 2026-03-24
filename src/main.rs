@@ -30,8 +30,8 @@ struct Cli {
     fixme: bool,
 
     /// display both comments and tasks (can't be used with --hollow)
-    #[arg(long)]
-    all: bool,
+    #[arg(long, short)]
+    both: bool,
 }
 
 #[derive(Subcommand, Clone)]
@@ -45,8 +45,8 @@ enum Cmds {
     /// display all saved comments (default command)
     List {
         /// display both comments and tasks
-        #[arg(long)]
-        all: bool,
+        #[arg(long, short)]
+        both: bool,
 
         /// display only TODO comments
         #[arg(long, short)]
@@ -105,12 +105,12 @@ enum TaskOpt {
 
 fn main() {
     let cli = Cli::parse();
-    if cli.todo || cli.note || cli.todo || cli.hollow || cli.all {
-        if cli.hollow && cli.all {
+    if cli.todo || cli.note || cli.todo || cli.hollow || cli.both {
+        if cli.hollow && cli.both {
             let error = color::paint_str("Error:".to_string(), color::Color::Red);
             let hollow = color::paint_str("--hollow".to_string(), color::Color::Yellow);
-            let all = color::paint_str("--all".to_string(), color::Color::Yellow);
-            println!("{error} flag {hollow} can't be used with {all}. Use one or another");
+            let both = color::paint_str("--both".to_string(), color::Color::Yellow);
+            println!("{error} flag {hollow} can't be used with {both}. Use one or another");
             return;
         }
         if cli.hollow {
@@ -118,8 +118,8 @@ fn main() {
             return;
         } else {
             commands::list::list(cli.todo, cli.note, cli.fixme);
-            if cli.all {
-                commands::list::list_all();
+            if cli.both {
+                commands::list::list_both();
                 return;
             }
         }
@@ -127,10 +127,10 @@ fn main() {
     match cli.cmd {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
-        Some(Cmds::List { all, todo, note, fixme}) => {
+        Some(Cmds::List { both, todo, note, fixme}) => {
             commands::list::list(todo, note, fixme);
-            if all {
-                commands::list::list_all();
+            if both {
+                commands::list::list_both();
             }
         },
         Some(Cmds::Dismiss { }) => commands::dismiss::dismiss(),

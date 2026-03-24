@@ -2,7 +2,7 @@ use std::{ops::Add};
 
 use crate::{color, storage, commands::general, commands::scan, commands::task};
 
-pub fn list_all() {
+pub fn list_both() {
     let gt = color::paint_str("Global Tasks".to_string(), color::Color::Blue);
     //println!(" ~~ {} ~~",gt);
     println!("    {}",gt);
