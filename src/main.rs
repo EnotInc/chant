@@ -16,6 +16,18 @@ struct Cli {
     /// run chant without initialization (not recomended)
     #[arg(long)]
     hollow: bool,
+
+    /// display only TODO comments
+    #[arg(long, short)]
+    todo: bool,
+
+    /// display only NOTE comments
+    #[arg(long, short)]
+    note: bool,
+
+    /// display only FIXME comments
+    #[arg(long, short)]
+    fixme: bool,
 }
 
 #[derive(Subcommand, Clone)]
@@ -28,9 +40,21 @@ enum Cmds {
     
     /// display all saved comments (default command)
     List {
-        /// display all saved comments and tasks
+        /// display both comments and tasks
         #[arg(long)]
-        all: bool
+        all: bool,
+
+        /// display only TODO comments
+        #[arg(long, short)]
+        todo: bool,
+
+        /// display only NOTE comments
+        #[arg(long, short)]
+        note: bool,
+
+        /// display only FIXME comments
+        #[arg(long, short)]
+        fixme: bool,
     },
 
     /// print the current config
@@ -77,16 +101,20 @@ enum TaskOpt {
 
 fn main() {
     let cli = Cli::parse();
-    //if let Some(_) = cli.in_place {
-    if  cli.hollow {
-        commands::scan::scan_hollow();
-        return;
+    if cli.todo || cli.note || cli.todo || cli.hollow {
+        if cli.hollow {
+            commands::scan::scan_hollow(cli.todo, cli.note, cli.fixme);
+            return;
+        } else {
+            commands::list::list(cli.todo, cli.note, cli.fixme);
+            return
+        }
     }
     match cli.cmd {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
-        Some(Cmds::List { all }) => {
-            commands::list::list();
+        Some(Cmds::List { all, todo, note, fixme}) => {
+            commands::list::list(todo, note, fixme);
             if all {
                 commands::list::list_all();
             }
@@ -111,6 +139,6 @@ fn main() {
                 None => { commands::task::print_tasks(); }
             }
         },
-        None => commands::list::list(),
+        None => commands::list::list(true, true, true),
     }
 }

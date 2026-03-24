@@ -44,8 +44,10 @@ pub fn scan_force() {
     storage::save_storage(&new_storage);
 }
 
-pub fn scan_hollow() {
+pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
     let config = config::new_config();
+
+    let any = !todo && !note && !fixme;
 
     let home_path = Path::new(".");
     let walker = WalkBuilder::new(home_path)
@@ -73,6 +75,10 @@ pub fn scan_hollow() {
                                 println!(" == {} ==", path);
 
                                 for com in file.comments {
+                                    if !((com.1.kind == "TODO" && (any || todo)) ||
+                                         (com.1.kind == "NOTE" && (any || note)) ||
+                                         (com.1.kind == "FIXME" && (any || fixme))) { continue; }
+
                                     let mut kind_color = color::Color::Yellow;
                                     match com.1.kind.as_str() {
                                         "TODO" => kind_color = color::Color::Blue,

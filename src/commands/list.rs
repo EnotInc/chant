@@ -8,11 +8,13 @@ pub fn list_all() {
     task::print_tasks();
 }
 
-pub fn list() {
+pub fn list(todo: bool, note: bool, fixme: bool) {
     if !general::is_initialized(){
         general::init_first();
         return; 
     }
+
+    let any = !todo && !note && !fixme;
 
     scan::scan();
 
@@ -34,6 +36,10 @@ pub fn list() {
         coms.sort_by(|a, b| a.1.index.cmp(&b.1.index));
 
         for (_, comment) in coms {
+            if !((comment.kind == "TODO" && (any || todo)) ||
+                 (comment.kind == "NOTE" && (any || note)) ||
+                 (comment.kind == "FIXME" && (any || fixme))) { continue; }
+
             is_empty = false;
             let c: storage::Comment = comment.clone();
 
