@@ -95,4 +95,5 @@ pub fn print_tasks() {
         }
         println!(" {} - {} {}", id, done, message);
     }
+    println!();
 }

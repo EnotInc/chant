@@ -27,7 +27,11 @@ enum Cmds {
     Scan {},
     
     /// display all saved comments (default command)
-    List {},
+    List {
+        /// display all saved comments and tasks
+        #[arg(long)]
+        all: bool
+    },
 
     /// print the current config
     Config {},
@@ -81,7 +85,12 @@ fn main() {
     match cli.cmd {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
-        Some(Cmds::List { }) => commands::list::list(),
+        Some(Cmds::List { all }) => {
+            commands::list::list();
+            if all {
+                commands::list::list_all();
+            }
+        },
         Some(Cmds::Dismiss { }) => commands::dismiss::dismiss(),
         Some(Cmds::Config { }) => commands::config::print_config(),
         Some(Cmds::Reset { }) => commands::general::reset(),

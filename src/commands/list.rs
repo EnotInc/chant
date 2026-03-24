@@ -1,6 +1,12 @@
 use std::ops::Add;
 
-use crate::{color, storage, commands::general, commands::scan};
+use crate::{color, storage, commands::general, commands::scan, commands::task};
+
+pub fn list_all() {
+    let gt = color::paint_str("Global Tasks".to_string(), color::Color::Blue);
+    println!(" ~~ {} ~~",gt);
+    task::print_tasks();
+}
 
 pub fn list() {
     if !general::is_initialized(){
