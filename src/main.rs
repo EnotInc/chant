@@ -98,9 +98,13 @@ enum TaskOpt {
 
     /// remove task
     Remove {
-        #[arg(long)]
         /// remove all of the tasks
+        #[arg(long)]
         all: bool,
+
+        /// remove all of the tasks
+        #[arg(long)]
+        done: bool,
 
         /// remove one task by id
         id: Option<Vec<String>>,
@@ -161,9 +165,18 @@ fn main() {
                 Some(TaskOpt::Add { message }) => { commands::task::add_task(message) }
                 Some(TaskOpt::Done { id }) => { commands::task::done_task(id); }
                 Some(TaskOpt::Edit { id }) => { commands::task::edit_task(id); }
-                Some(TaskOpt::Remove { all, id }) => {
+                Some(TaskOpt::Remove { all, done, id }) => {
+                    if all && done {
+                        let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
+                        let all = services::color::paint_str("--all".to_string(), services::color::Color::Yellow);
+                        let done = services::color::paint_str("--done".to_string(), services::color::Color::Yellow);
+                        println!("{error} flag {all} can't be used with {done}. Use one or another");
+                        return;
+                    }
                     if all {
                         commands::task::remove_all();
+                    } else if done {
+                        commands::task::remove_done();
                     } else {
                         match id {
                             Some(v) => commands::task::remove_task(v),

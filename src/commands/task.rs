@@ -59,6 +59,22 @@ pub fn remove_all() {
     storage::save_storage(&s);
 }
 
+pub fn remove_done() {
+    if !general::is_initialized() {
+        general::init_first();
+        return;
+    }
+    let mut s = storage::load_storage();
+    for task in s.tasks.clone() {
+        if task.1.done {
+            s.tasks.remove(&task.0);
+        }
+    }
+    println!("Completed tasks was removed\n");
+
+    storage::save_storage(&s);
+}
+
 pub fn done_task(id: String) {
     if !general::is_initialized() {
         general::init_first();
