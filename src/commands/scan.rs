@@ -27,10 +27,10 @@ pub fn scan_force() {
                 let file_name = e.file_name().to_string_lossy();
                 let path = &e.path().to_string_lossy();
                 if let Some(ft) = e.file_type() {
-                    if ft.is_dir() && config.files.ignore.contains(&file_name.to_string()) {
+                    if ft.is_dir() && config.scanner.ignore.contains(&file_name.to_string()) {
                         continue;
-                    } else if !ft.is_dir() && !config.files.ignore.contains(&file_name.to_string()) && let Some(ext) = e.path().extension() {
-                        if config.files.read.contains(&ext.display().to_string()){
+                    } else if !ft.is_dir() && !config.scanner.ignore.contains(&file_name.to_string()) && let Some(ext) = e.path().extension() {
+                        if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
                             file = parser::parse_file(&file, true);
                             new_storage.files.insert(path.to_string(), file);
@@ -62,10 +62,10 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                 let file_name = e.file_name().to_string_lossy();
                 let path = &e.path().to_string_lossy();
                 if let Some(ft) = e.file_type(){
-                    if ft.is_dir() && config.files.ignore.contains(&file_name.to_string()) {
+                    if ft.is_dir() && config.scanner.ignore.contains(&file_name.to_string()) {
                         continue;
                     } else if !ft.is_dir() && let Some(ext) = e.path().extension() {
-                        if config.files.read.contains(&ext.display().to_string()){
+                        if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
                             file = parser::parse_file(&file, true);
 
@@ -136,10 +136,10 @@ pub fn scan() {
                 let path = &e.path().to_string_lossy();
 
                 if let Some(ft) = e.file_type() {
-                    if ft.is_dir() && config.files.ignore.contains(&file_name.to_string()) {
+                    if ft.is_dir() && config.scanner.ignore.contains(&file_name.to_string()) {
                         continue;
                     } else if !ft.is_dir() && let Some(ext) = e.path().extension() {
-                        if !config.files.ignore.contains(&file_name.to_string()) &&  config.files.read.contains(&ext.display().to_string()){
+                        if !config.scanner.ignore.contains(&file_name.to_string()) &&  config.scanner.read.contains(&ext.display().to_string()){
                             let mut file: storage::File;
                             let mut new = false;
                             if storage.files.contains_key(&path.to_string()) {

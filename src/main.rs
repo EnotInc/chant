@@ -138,8 +138,8 @@ fn main() {
             match save {
                 Some(file) => {
                     match file {
-                        Some(v) => commands::about::save(v),
-                        None => commands::about::save("about.md".to_string())
+                        Some(v) => commands::about::save(Some(v)),
+                        None => commands::about::save(None)
                     }
                 }
                 None => { commands::about::list(); }

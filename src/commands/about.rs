@@ -1,6 +1,6 @@
 use::std::fs;
 use std::path;
-use crate::{storage, commands::general, commands::scan, services::color};
+use crate::{commands::{general, scan}, services::{config, color}, storage};
 
 // About: list()
 // This func is displaying all found 'about'
@@ -57,7 +57,7 @@ pub fn list() {
 // By default it creates files in every directory, with name "about.md"
 // This can be changed by providing different name with flagh -s
 // For example: `cahnt about -s readme.md` -> now all 'About' blocks will be saved to 'readme.md'
-pub fn save(output: String) {
+pub fn save(output: Option<String>) {
     if !general::is_initialized(){
         general::init_first();
         return; 
@@ -70,12 +70,25 @@ pub fn save(output: String) {
         return;
     }
 
+    let mut cfg = config::read_config();
+    let o: String;
+    match output {
+        Some(v) => {
+            o = cfg.about.output.clone();
+            if cfg.about.output != v {
+                cfg.about.output = v.clone();
+                config::save_config(cfg);
+            }
+        }
+        None => { o = cfg.about.output; }
+    }
+
     let mut files: Vec<_> = s.files.iter().collect();
     files.sort_by(|a, b| a.0.cmp(&b.0));
 
     let mut first = true;
     for file in files {
-        let path = path::Path::new(&file.1.dir.to_string()).join(&output);
+        let path = path::Path::new(&file.1.dir.to_string()).join(&o);
         let f = path.to_string_lossy().to_string();
 
         if first {

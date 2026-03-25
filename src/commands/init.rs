@@ -10,7 +10,8 @@ pub fn init(){
         let _ = fs::File::create("./.chant/storage.json");
 
         let _ = fs::File::create("./.chant/config.toml");
-        config::create_config();
+        let cfg = config::create_config();
+        config::save_config(cfg);
     } else {
         let error = color::paint_str("Error:".to_string(), color::Color::Red);
         let chant_dismiss = color::paint_str("chant dismiss".to_string(), color::Color::Yellow);
