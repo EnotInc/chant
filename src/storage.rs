@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path::Path};
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
@@ -52,18 +52,20 @@ pub fn new_task(text: String, ) -> Task {
 pub struct File {
     pub hash: u64,
     pub path: String,
+    pub dir: String,
     pub comments: HashMap<u64, Comment>,
     pub abouts: Vec<About>,
 }
 
 pub fn new_file(path: String) -> File {
     let content = fs::read_to_string(&path);
+    let dir = Path::new(&path).parent().unwrap().to_str().unwrap().to_string();
     let mut c = String::new();
     match content {
         Ok(v) => { c = v }
         Err(e) => { println!("Unable to open file at :{path}\n{e}"); }
     }
-    return File{hash: hash::get_hash(&c), path: path, comments: HashMap::new(), abouts: Vec::new()}
+    return File{hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new()}
 }
 
 

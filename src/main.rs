@@ -75,7 +75,11 @@ enum Cmds {
     },
 
     /// Display all 'about' comments
-    About {},
+    About {
+        /// save all 'about' blocks to the files (per folder)
+        #[arg(short, long)]
+        save: Option<Option<String>>,
+    },
 }
 
 #[derive(Subcommand, Clone)]
@@ -85,15 +89,12 @@ enum TaskOpt {
     Add {
         message: String
     },
+
     /// mark task as "done" by id
-    Done {
-        id: String
-    },
+    Done { id: String },
 
     /// edit task message
-    Edit {
-        id: String
-    },
+    Edit { id: String },
 
     /// remove task
     Remove {
@@ -133,7 +134,17 @@ fn main() {
         }
     }
     match cli.cmd {
-        Some(Cmds::About {  }) => commands::about::list(),
+        Some(Cmds::About { save }) => {
+            match save {
+                Some(file) => {
+                    match file {
+                        Some(v) => commands::about::save(v),
+                        None => commands::about::save("about.md".to_string())
+                    }
+                }
+                None => { commands::about::list(); }
+            }
+        }
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::List { both, todo, note, fixme}) => {

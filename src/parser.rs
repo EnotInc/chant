@@ -85,7 +85,7 @@ fn parse_about(re: Regex, line: &str, index: i32, about: &mut storage::About) {
         about.lines.push(about_line);
     } else {
         let re_det = Regex::new(DETAILS_PATTERN).unwrap();
-        if let Some(captures) = re_det.captures(line){
+        if let Some(captures) = re_det.captures(line) {
             let about_line = storage::new_about_line("".to_string(), captures[2].to_string());
             about.lines.push(about_line);
         } else {
