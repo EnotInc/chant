@@ -72,12 +72,16 @@ enum Cmds {
     Task {
         #[command(subcommand)]
         option: Option<TaskOpt>,
-    }
+    },
+
+    /// Display all 'about' comments
+    About {},
 }
 
 #[derive(Subcommand, Clone)]
 enum TaskOpt {
-    /// add new task with "message"
+    /// add new task with "message". Command have alias "new"
+    #[command(alias="new")]
     Add {
         message: String
     },
@@ -129,6 +133,7 @@ fn main() {
         }
     }
     match cli.cmd {
+        Some(Cmds::About {  }) => commands::about::list(),
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::List { both, todo, note, fixme}) => {

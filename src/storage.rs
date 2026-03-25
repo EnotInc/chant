@@ -15,6 +15,27 @@ pub fn new_storage() -> Storage {
     return Storage { files: HashMap::new() , tasks: HashMap::new()};
 }
 
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct About {
+    pub lines: Vec<AboutLine>,
+    pub index: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct  AboutLine {
+    pub header: String,
+    pub text: String,
+}
+
+pub fn new_about(index: i32) -> About {
+    return About{lines: Vec::new(), index};
+}
+
+pub fn new_about_line(header: String, text: String) -> AboutLine{
+    return AboutLine{header, text};
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Task {
     pub id: String,
@@ -31,7 +52,8 @@ pub fn new_task(text: String, ) -> Task {
 pub struct File {
     pub hash: u64,
     pub path: String,
-    pub comments: HashMap<u64, Comment>
+    pub comments: HashMap<u64, Comment>,
+    pub abouts: Vec<About>,
 }
 
 pub fn new_file(path: String) -> File {
@@ -41,7 +63,7 @@ pub fn new_file(path: String) -> File {
         Ok(v) => { c = v }
         Err(e) => { println!("Unable to open file at :{path}\n{e}"); }
     }
-    return File{hash: hash::get_hash(&c), path: path, comments: HashMap::new()}
+    return File{hash: hash::get_hash(&c), path: path, comments: HashMap::new(), abouts: Vec::new()}
 }
 
 
@@ -50,13 +72,12 @@ pub struct Comment {
     pub id: String,
     pub kind: String,
     pub line: String,
-    pub code: String,
     pub index: i32,
     pub hash: u64
 }
 
 pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment{kind: kind, line: line, index: index, hash: hash, code: String::new(), id: get_id(hash)}
+    return Comment{kind: kind, line: line, index: index, hash: hash, id: get_id(hash)}
 }
 
 fn get_id(hash: u64) -> String {
