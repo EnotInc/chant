@@ -16,13 +16,13 @@ if line is matched [ABOUT_PATTERN], it called [parse_about]
 
 ---
 
-#### *About* [parse_comment()](parser.rs#L68)
+#### *About* [parse_comment()](parser.rs#L69)
 uset to find TODO, NOTE and FIXME comments\
 it's eather creates a new comment, and insert it, or returns an old one
 
 ---
 
-#### *About* [parse_about()](parser.rs#L84)
+#### *About* [parse_about()](parser.rs#L85)
 used to find 'about' blocks in the file\
 return storage::About
 
@@ -37,17 +37,13 @@ main data sctructure. Contains 2 maps: files, and tasks
 
 #### *About* [About](storage.rs#L21)
 Here is how 'about' blocks saved\
-[About] have vecor of lines, and an index of 'about' header
+`header` - string with 'About' in line\
+`index` - number of header line in file\
+`lines` - vector of lines
 
 ---
 
-#### *About* [AboutLine](storage.rs#L30)
-header - which is used to 'render' line with "About" in it differently (in markdoun file)\
-text - just a text. It's contains either content in line, or a header text (without "About" part)
-
----
-
-#### *About* [Task](storage.rs#L47)
+#### *About* [Task](storage.rs#L37)
 Used to save local task\
 `id` - used to work with taks ('chant done <id>' and 'chant remove <id>'). It just a first 6 digits of hash\
 `text` - just a content\
@@ -55,7 +51,7 @@ Used to save local task\
 
 ---
 
-#### *About* [File](storage.rs#L64)
+#### *About* [File](storage.rs#L54)
 Created for each file, that scanner checks. It contains all of necessary data for chant to work with\
 `hash` - used to chech if file changed or not\
 `path` - path from root of repo to the file\
@@ -65,7 +61,7 @@ Created for each file, that scanner checks. It contains all of necessary data fo
 
 ---
 
-#### *About* [Comment](storage.rs#L92)
+#### *About* [Comment](storage.rs#L82)
 Contains a data about every comment\
 `id` - now used now\
 `kind` - TODO / NOTE / FIXME\

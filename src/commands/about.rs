@@ -38,12 +38,20 @@ pub fn list() {
                 let mut first: bool = true;
                 for line in &about.lines {
                     if first {
-                        let header = color::paint_str(line.header.to_string(), color::Color::Blue);
-                        let topic = color::paint_str(line.text.to_string(), color::Color::Yellow);
-                        println!(" {} {} {}", index , header, topic);
+                        let split = line.split_once(" ");
+                        match split {
+                            Some(v) => {
+                                let header = color::paint_str(v.0.to_string(), color::Color::Blue);
+                                let topic = color::paint_str(v.1.to_string(), color::Color::Yellow);
+                                println!(" {} {} {}", index , header, topic);
+                            }
+                            None => {
+                                println!(" {}{} {}",spaces, border, line);
+                            }
+                        }
                         first = false;
                     } else {
-                        println!(" {}{} {}",spaces, border, line.text);
+                        println!(" {}{} {}",spaces, border, line);
                     }
                 }
                 println!();
@@ -156,17 +164,21 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
         md_file.push_str(&file_header);
 
         for about in &file.1.abouts {
+            let split = about.header.split_once(" ");
+            match split {
+                Some(v) => {
+                    let topic = create_topic_link(v.1.trim(), about.index, &file.1.path.trim());
+                    md_file.push_str(&format!("\n#### *{}* {}\n", v.0.trim(), topic));
+                }
+                None => {}
+            }
+
             let mut i = 0;
             for line in &about.lines {
                 i += 1;
-                if !line.header.is_empty() {
-                    let topic = create_topic_link(&line.text.trim(), about.index, &file.1.path.trim());
-                    md_file.push_str(&format!("\n#### *{}* {}\n", line.header, topic));
-                } else {
-                    md_file.push_str(&line.text.trim());
-                    if i != about.lines.len() {
-                        md_file.push_str("\\\n");
-                    }
+                md_file.push_str(&line.trim());
+                if i != about.lines.len() {
+                    md_file.push_str("\\\n");
                 }
             }
             md_file.push_str("\n\n---\n");
