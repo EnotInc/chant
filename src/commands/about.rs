@@ -76,7 +76,13 @@ pub fn save(output: Option<String>) {
     let o: String;
     match output {
         Some(v) => {
-            o = v.clone();
+            let ext = path::Path::new(&v).extension();
+            let e: String;
+            match ext {
+                Some(_) => { e = "".to_string(); }
+                None => { e = ".md".to_string(); }
+            }
+            o = format!("{}{}", v, e);
             if cfg.about.output != v {
                 cfg.about.output = v;
                 config::save_config(cfg);
@@ -90,6 +96,7 @@ pub fn save(output: Option<String>) {
     let dir_to_about = create_about_structures(files, &o);
 
     save_abouts(dir_to_about);
+    println!();
 }
 
 /// About remove_old_about_files
@@ -141,10 +148,11 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
         }
         let cur_dir = path::Path::new(&file.1.dir).join(output).to_str().unwrap().to_string();
         if !dir_to_about.contains_key(&cur_dir) {
-            dir_to_about.insert(cur_dir.clone(), String::new());
+            let dir_header = format!("# **{}**\n", &file.1.dir);
+            dir_to_about.insert(cur_dir.clone(), dir_header);
         }
         let md_file = dir_to_about.get_mut(&cur_dir).unwrap();
-        let file_header = format!("\n# == {} ==\n", &file.1.path.trim());
+        let file_header = format!("\n## **== {} ==**\n", &file.1.path.trim());
         md_file.push_str(&file_header);
 
         for about in &file.1.abouts {
@@ -153,7 +161,7 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
                 i += 1;
                 if !line.header.is_empty() {
                     let topic = create_topic_link(&line.text.trim(), about.index, &file.1.path.trim());
-                    md_file.push_str(&format!("\n### *{}* {}\n", line.header, topic));
+                    md_file.push_str(&format!("\n#### *{}* {}\n", line.header, topic));
                 } else {
                     md_file.push_str(&line.text.trim());
                     if i != about.lines.len() {
@@ -181,6 +189,19 @@ fn create_topic_link(topic: &str, index: i32, path: &str) -> String {
 fn save_abouts(dir_to_about: HashMap<String, String>) {
     for dir in dir_to_about {
         let about_path = path::Path::new(&dir.0);
-        let _ = fs::write(about_path, &dir.1);
+        let write = fs::write(about_path, &dir.1);
+        match write {
+            Ok(_) => {
+                let filename = color::paint_str(about_path.to_string_lossy().to_string(), color::Color::Cyan);
+                let complete = color::paint_str("complete".to_string(), color::Color::Green);
+                println!(" File {} is {}!", filename, complete);
+            }
+            Err(e) => {
+                let error = color::paint_str("Error:".to_string(), color::Color::Red);
+                let filename = color::paint_str(about_path.to_string_lossy().to_string(), color::Color::Cyan);
+                println!(" {} unable to create file {}\n{}", error, filename, e);
+            }
+        }
+
     }
 }

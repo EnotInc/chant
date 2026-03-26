@@ -20,7 +20,7 @@ pub fn new_storage() -> Storage {
 
 /// About About
 /// Here is how 'about' blocks saved
-/// About have vecor of lines, and an index of 'about' header
+/// [About] have vecor of lines, and an index of 'about' header
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct About {
     pub lines: Vec<AboutLine>,
