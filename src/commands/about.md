@@ -8,7 +8,7 @@ Not rly useful, you better call `chant about -s` to save output to a file
 
 ---
 
-#### *About* [save(output: String)](about.rs#L55)
+#### *About* [save(output: String)](about.rs#L64)
 This functions is used to save all found 'About' blocks into files\
 By default it creates files in every directory, with name "about.md"\
 This can be changed by providing different name with flagh -s\
@@ -16,25 +16,25 @@ For example: `chant about -s readme.md` -> now all 'About' blocks will be saved 
 
 ---
 
-#### *About* [remove_old_about_files](about.rs#L102)
+#### *About* [remove_old_about_files](about.rs#L111)
 I need this to rewrite new 'about' blocks\
 Maybe i'll add some sort of check, to not rewrite file if nothing was changed in about's. Idk, we'll see\
 Now this is fine, ig
 
 ---
 
-#### *About* [create_about_structures](about.rs#L140)
+#### *About* [create_about_structures](about.rs#L149)
 This func is used to create hash map 'dir' to 'file content'\
 both represented as strings
 
 ---
 
-#### *About* [create_topic_link()](about.rs#L179)
+#### *About* [create_topic_link()](about.rs#L192)
 just a small helper func, to create markdown link to each 'about' blocks in the source code
 
 ---
 
-#### *About* [save_abouts()](about.rs#L187)
+#### *About* [save_abouts()](about.rs#L200)
 used builded `dir_to_about` hash_map to create new files
 
 ---

@@ -11,7 +11,7 @@ const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
 const ABOUT_PATTERN: &str = r".*//\s?(About)[:\s]*(.*)";
 const DETAILS_PATTERN: &str = r"\s*([\/]*)\s(.*)";
 
-pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
+pub fn parse_file(file: &storage::File, is_new_file: bool, hollow: bool) -> storage::File {
     let content = fs::read_to_string(file.path.to_string());
     match  content {
         Ok(v) => {
@@ -24,7 +24,7 @@ pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
                 let mut about: Option<storage::About> = None;
                 for line in lines {
                     index += 1;
-                    about = parse_line(file, line, index, &mut new_file, &mut about);
+                    about = parse_line(file, line, index, &mut new_file, &mut about, hollow);
                 }
             }
             return new_file;
@@ -37,18 +37,18 @@ pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
 /// used to parse 1 line
 /// if line is matched [COMMENT_PATTERN], it called [parse_comment]
 /// if line is matched [ABOUT_PATTERN], it called [parse_about]
-fn parse_line(file: &storage::File, line: &str, index: i32, new_file: &mut storage::File, about: &mut Option<storage::About>) -> Option<storage::About> {
+fn parse_line(file: &storage::File, line: &str, index: i32, new_file: &mut storage::File, about: &mut Option<storage::About>, hollow: bool) -> Option<storage::About> {
     let re_coms = Regex::new(COMMENT_PATTERN).unwrap();
     let re_about = Regex::new(ABOUT_PATTERN).unwrap();
 
     if re_coms.is_match(line) {
         parse_comment(re_coms, file, line, index, new_file);
         return None;
-    } else if re_about.is_match(line) {
+    } else if re_about.is_match(line) && !hollow {
         let mut a  = storage::new_about(index);
         parse_about(re_about, line, index, &mut a);
         return Some(a);
-    } else {
+    } else if !hollow {
         match about.as_mut() {
             Some(v) => {
                 if line.starts_with("//") {
@@ -63,6 +63,7 @@ fn parse_line(file: &storage::File, line: &str, index: i32, new_file: &mut stora
             None => { return None; }
         }
     }
+    return None;
 }
 
 /// About: parse_comment()
@@ -87,16 +88,16 @@ fn parse_comment(re: Regex, file: &storage::File, line: &str, index: i32, new_fi
 fn parse_about(re: Regex, line: &str, index: i32, about: &mut storage::About) {
     // TODO: figure out how to save hash of the 'about' block
     if let Some(captures) = re.captures(line) {
-        let about_line = storage::new_about_line(captures[1].to_string(), captures[2].to_string());
+        let about_line = format!("{} {}", captures[1].to_string(), captures[2].to_string());
         about.index = index;
-        about.lines.push(about_line);
+        about.header = about_line;
     } else {
         let re_det = Regex::new(DETAILS_PATTERN).unwrap();
         if let Some(captures) = re_det.captures(line) {
-            let about_line = storage::new_about_line("".to_string(), captures[2].to_string());
+            let about_line = captures[2].to_string();
             about.lines.push(about_line);
         } else {
-            let about_line = storage::new_about_line("".to_string(), line.to_string());
+            let about_line = line.to_string();
             about.lines.push(about_line);
         }
     }

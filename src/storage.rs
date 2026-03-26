@@ -20,28 +20,18 @@ pub fn new_storage() -> Storage {
 
 /// About About
 /// Here is how 'about' blocks saved
-/// [About] have vecor of lines, and an index of 'about' header
+/// `header` - string with 'About' in line
+/// `index` - number of header line in file
+/// `lines` - vector of lines
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct About {
-    pub lines: Vec<AboutLine>,
+    pub lines: Vec<String>,
+    pub header: String,
     pub index: i32,
 }
 
-/// About AboutLine
-/// header - which is used to 'render' line with "About" in it differently (in markdoun file)
-/// text - just a text. It's contains either content in line, or a header text (without "About" part)
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct  AboutLine {
-    pub header: String,
-    pub text: String,
-}
-
 pub fn new_about(index: i32) -> About {
-    return About{lines: Vec::new(), index};
-}
-
-pub fn new_about_line(header: String, text: String) -> AboutLine{
-    return AboutLine{header, text};
+    return About{lines: Vec::new(), header: String::new(), index};
 }
 
 /// About Task

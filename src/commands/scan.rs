@@ -36,7 +36,7 @@ pub fn scan_force() {
                     } else if !ft.is_dir() && !config.scanner.ignore.contains(&file_name.to_string()) && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&file, true);
+                            file = parser::parse_file(&file, true, false);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }
@@ -74,7 +74,7 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                     } else if !ft.is_dir() && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&file, true);
+                            file = parser::parse_file(&file, true, true);
 
                             if !file.comments.is_empty() {
                                 let mut file_data: String = String::new();
@@ -159,7 +159,7 @@ pub fn scan() {
                                 new = true;
                             }
 
-                            file = parser::parse_file(&file, new);
+                            file = parser::parse_file(&file, new, false);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }
