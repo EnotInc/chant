@@ -2,6 +2,9 @@ use std::fs;
 
 use crate::{services::color, commands::general};
 
+/// About: print_config
+/// what's interesting, config.rs doesn't inclue storage::config
+/// this func just reads the `.chant/config.toml` file and displays it
 pub fn print_config() {
     if !general::is_initialized() {
         general::init_first();

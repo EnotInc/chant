@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{services::hash, services::color};
 
+/// About storage
+/// main data sctructure. Contains 2 maps: files, and tasks
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Storage {
     pub files: HashMap<String, File>,
@@ -16,12 +18,18 @@ pub fn new_storage() -> Storage {
 }
 
 
+/// About About
+/// Here is how 'about' blocks saved
+/// About have vecor of lines, and an index of 'about' header
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct About {
     pub lines: Vec<AboutLine>,
     pub index: i32,
 }
 
+/// About AboutLine
+/// header - which is used to 'render' line with "About" in it differently (in markdoun file)
+/// text - just a text. It's contains either content in line, or a header text (without "About" part)
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct  AboutLine {
     pub header: String,
@@ -36,6 +44,11 @@ pub fn new_about_line(header: String, text: String) -> AboutLine{
     return AboutLine{header, text};
 }
 
+/// About Task
+/// Used to save local task
+/// `id` - used to work with taks ('chant done <id>' and 'chant remove <id>'). It just a first 6 digits of hash
+/// `text` - just a content
+/// `done` - is it done or not
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Task {
     pub id: String,
@@ -48,6 +61,13 @@ pub fn new_task(text: String, ) -> Task {
     return Task{text, done: false, id:get_id(hash)}
 }
 
+/// About File
+/// Created for each file, that scanner checks. It contains all of necessary data for chant to work with
+/// `hash` - used to chech if file changed or not
+/// `path` - path from root of repo to the file
+/// `dir` - relative path to directory with file
+/// `comments` - map of found comments (todo, note and fixme). It used hash as key, so I can change if line is changed or not
+/// `abouts` - vector of 'about' blocks
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct File {
     pub hash: u64,
@@ -69,6 +89,12 @@ pub fn new_file(path: String) -> File {
 }
 
 
+/// About Comment
+/// Contains a data about every comment
+/// `id` - now used now
+/// `kind` - TODO / NOTE / FIXME
+/// `index` - line with commend 
+/// `hash` - hash of the line
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Comment {
     pub id: String,
@@ -97,7 +123,7 @@ pub fn save_storage(storage: &Storage) {
     }
 }
 
-pub fn load_storage() -> Storage{
+pub fn load_storage() -> Storage {
     let content = fs::read_to_string("./.chant/storage.json");
     match content {
         Ok(v) => {

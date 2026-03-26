@@ -1,3 +1,6 @@
+/// About colors.rs
+/// just a small file with [Color] enum, and pub fn [paint_str], wich adds ascii escape sequence to change the color of given line
+
 pub enum Color {
     Reset,
     Red,

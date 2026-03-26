@@ -3,6 +3,10 @@ use std::{ops::Add, path::Path};
 use ignore::WalkBuilder;
 use crate::{services::config, commands::general, storage, parser, services::color};
 
+/// About scan_force
+/// This functon scans, without hash checking
+/// It used when you don't need to check hesh (specifically when `chant init` or `chant reset` is called), or when you need to rescan every thing
+/// Basicaly I just deleting old `.chant/storage` file, and creating a new one. But all tasks and 'about' block are saved 
 pub fn scan_force() {
     if !general::is_initialized(){
         general::init_first();
@@ -44,6 +48,9 @@ pub fn scan_force() {
     storage::save_storage(&new_storage);
 }
 
+/// About scan_hollow()
+/// This function is kinda similar to [scan_force], but it doesn't require chant to be initialized (it didn't use `.chant/storage.json` file or config)
+/// After each file, it prings out found comments. And it uses a default config 
 pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
     let config = config::new_config();
 
@@ -109,6 +116,9 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
     println!();
 }
 
+/// About scan()
+/// This is the functoin that runs every time you trying to get list of comments, task or 'about' blocks
+/// It have a hash check, so if file wasn't changed, instead of paring it all again, it just returns an old one
 pub fn scan() {
     if !general::is_initialized(){
         general::init_first();

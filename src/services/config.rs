@@ -2,17 +2,27 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use toml;
 
+/// About Config
+/// Main struct for config
+/// Includes [Scanner] and [About]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     pub scanner: Scanner,
     pub about: About,
 }
+
+
+/// About Scanner
+/// `read` - vector of strings, stores a list for supperted file extatoins (without dot '.')
+/// `ignore` - vector of string with ignored files / directories, such as `target/`, `.chant/`, `.git/` and so on
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Scanner {
     pub read: Vec<String>,
     pub ignore: Vec<String>,
 }
 
+/// About About
+/// `output` - name of the file with 'about' blocks. "about.md" by default
 #[derive(Debug, Deserialize, Serialize)]
 pub struct About {
     pub output: String,
@@ -40,7 +50,7 @@ pub fn new_config() -> Config {
     let default_read: Vec<String> = vec!["rs".to_string(), "go".to_string(), "js".to_string(), "ts".to_string(), "dart".to_string(), "jsx".to_string(), "tsx".to_string(), "c".to_string(), "cpp".to_string(), "h".to_string(), "hpp".to_string(), "java".to_string()];
     let default_ignore: Vec<String> = vec![".chant".to_string(), "target".to_string(), ".git".to_string(), "node_modules".to_string(), ".gitignore".to_string(), "vendor".to_string(), "build".to_string(), ".idea".to_string(), ".vscode".to_string()];
     let scanner: Scanner = Scanner { read: default_read, ignore: default_ignore };
-    let about: About = About { output: String::new() };
+    let about: About = About { output: String::from("about.md") };
     return Config { scanner: scanner, about: about }
 }
 

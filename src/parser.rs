@@ -3,10 +3,10 @@ use regex::Regex;
 
 use crate::{services::hash, storage};
 
-// About: constants
-// COMMENT_PATTERN - used to find TODO, NOTE and FIXME comments
-// ABOUT_PATTERN - used to find 'About' line
-// DETAILS_PATTERN - used to separate comment symbols (//) and text
+/// About: constants
+/// [COMMENT_PATTERN] - used to find TODO, NOTE and FIXME comments
+/// [ABOUT_PATTERN] - used to find 'About' line
+/// [DETAILS_PATTERN] - used to separate comment symbols (//) and text
 const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
 const ABOUT_PATTERN: &str = r".*//\s?(About)[:\s]*(.*)";
 const DETAILS_PATTERN: &str = r"\s*([\/]*)\s(.*)";
@@ -33,6 +33,10 @@ pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
     }
 }
 
+/// About parse_line()
+/// used to parse 1 line
+/// if line is matched [COMMENT_PATTERN], it called [parse_comment]
+/// if line is matched [ABOUT_PATTERN], it called [parse_about]
 fn parse_line(file: &storage::File, line: &str, index: i32, new_file: &mut storage::File, about: &mut Option<storage::About>) -> Option<storage::About> {
     let re_coms = Regex::new(COMMENT_PATTERN).unwrap();
     let re_about = Regex::new(ABOUT_PATTERN).unwrap();
@@ -61,6 +65,9 @@ fn parse_line(file: &storage::File, line: &str, index: i32, new_file: &mut stora
     }
 }
 
+/// About: parse_comment()
+/// uset to find TODO, NOTE and FIXME comments
+/// it's eather creates a new comment, and insert it, or returns an old one 
 fn parse_comment(re: Regex, file: &storage::File, line: &str, index: i32, new_file: &mut storage::File) {
     if let Some(captures) = re.captures(line) {
         let new_line_hash = hash::get_hash(&line.to_string());
@@ -74,7 +81,7 @@ fn parse_comment(re: Regex, file: &storage::File, line: &str, index: i32, new_fi
     }
 }
 
-/// About: parse_about
+/// About: parse_about()
 /// used to find 'about' blocks in the file
 /// return storage::About
 fn parse_about(re: Regex, line: &str, index: i32, about: &mut storage::About) {

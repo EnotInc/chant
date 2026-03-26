@@ -13,6 +13,10 @@ pub fn dismiss() {
     println!("{chant} was removed");
 }
 
+/// About remove_from_gitignore()
+/// It simply read `.gitignore` file line by line and creating a new buffer, ignoring line with `.chant` in it
+/// after that I use this buffer to rewrite `.gitignore`
+/// This may cause some trouble, `.gitignore` could not work, and you have to resave it manuanly
 fn remove_from_gitignore() {
     if general::is_gitignore_exists() {
         let content = fs::read_to_string(".gitignore");

@@ -2,6 +2,11 @@ use std::{collections::HashMap, io::{self, Write}};
 
 use crate::{storage, services::color, commands::general};
 
+/// About tasks.rs
+/// So I've wanned to be able to keep tack of my small chanes, and tasks inside of any project, so I added tasks
+/// It's basically a small 'todo' app inside of 'chant', but it's quite good, and even useful
+/// Tasks are stored in `.chant/storage.json` file, and now they are local. Maybe later, if I'll add a global config, I'll also implement a globals storage, so I can save all tasks, there. Idrk yet
+
 pub fn add_task(text: String) {
     if !general::is_initialized() {
         general::init_first();

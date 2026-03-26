@@ -1,6 +1,17 @@
 use crate::{services::color, services::config, commands::scan::scan_force};
 use std::fs;
 
+
+/// About general.rs
+/// I don't rly know why I keep it here, and not spread all of those functons across the services
+/// But here is a list some useful functoins:
+/// [is_gitignore_exists] - checking for `.gitignore` file existance
+/// [nothing_was_found] - simple notificatoin. Used when scaner function didn't found anything
+/// [init_first] - also notificaton, showed when chant wasn't initializes, but called feature required it
+/// [is_initialized] - checking if `.chant/` directory is exists
+/// [bad_syntax] - used to show used that he fked up
+/// [reset] - resets the config, and runs forced scan
+
 pub fn is_gitignore_exists() -> bool {
     let ex = fs::exists("./.gitignore");
     match ex {
