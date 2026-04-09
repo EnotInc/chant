@@ -3,9 +3,9 @@ use std::{ops::Add, path::Path};
 use ignore::WalkBuilder;
 use crate::{services::config, commands::general, storage, parser, services::color};
 
-/// About scan_force
+/// About |scan_force()|
 /// This functon scans, without hash checking
-/// It used when you don't need to check hesh (specifically when `chant init` or `chant reset` is called), or when you need to rescan every thing
+/// It used when you don't need to check hesh (specifically when `chant init` or `chant reset` is called), or when you need to rescan everything
 /// Basicaly I just deleting old `.chant/storage` file, and creating a new one. But all tasks and 'about' block are saved 
 pub fn scan_force() {
     if !general::is_initialized(){
@@ -36,7 +36,7 @@ pub fn scan_force() {
                     } else if !ft.is_dir() && !config.scanner.ignore.contains(&file_name.to_string()) && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&file, true, false);
+                            file = parser::parse_file(&mut new_storage, &file, true, false);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }
@@ -49,7 +49,7 @@ pub fn scan_force() {
 }
 
 /// About scan_hollow()
-/// This function is kinda similar to [scan_force], but it doesn't require chant to be initialized (it didn't use `.chant/storage.json` file or config)
+/// This function is kinda similar to [scan_force()], but it doesn't require chant to be initialized (it didn't use `.chant/storage.json` file or config)
 /// After each file, it prings out found comments. And it uses a default config 
 pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
     let config = config::new_config();
@@ -63,6 +63,8 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
         .git_exclude(true)
         .hidden(false).build();
 
+    let mut temp_storage = storage::new_storage();
+    let mut temp_files: Vec<storage::File> = Vec::new();
     for entry in walker {
         match entry {
             Ok(e) => {
@@ -74,38 +76,8 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                     } else if !ft.is_dir() && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&file, true, true);
-
-                            if !file.comments.is_empty() {
-                                let mut file_data: String = String::new();
-
-
-                                for com in file.comments {
-                                    if !((com.1.kind == "TODO" && (any || todo)) ||
-                                         (com.1.kind == "NOTE" && (any || note)) ||
-                                         (com.1.kind == "FIXME" && (any || fixme))) { continue; }
-
-                                    let mut kind_color = color::Color::Yellow;
-                                    match com.1.kind.as_str() {
-                                        "TODO" => kind_color = color::Color::Blue,
-                                        "NOTE" => kind_color = color::Color::Green,
-                                        "FIXME" => kind_color = color::Color::Red,
-                                        _ => {}
-                                    }
-                                    //let id = color::paint_str(c.id, color::Color::Yellow);
-                                    let kind = color::paint_str(com.1.kind, kind_color);
-                                    let index = color::paint_str(com.1.index.add(1).to_string(), color::Color::Cyan);
-
-                                    file_data += &format!(" {}: [{}] - {}\n", index, kind, com.1.line);
-                                }
-
-                                if !file_data.is_empty() {
-                                    println!();
-                                    let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
-                                    println!(" == {} ==", path);
-                                    print!("{}", file_data);
-                                }
-                            }
+                            file = parser::parse_file(&mut temp_storage, &file, true, true);
+                            temp_files.push(file);
                         }
                     }
                 }
@@ -113,10 +85,43 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
             Err(e) => println!("unable to scan: {}", e),
         }
     }
+    for file in temp_files {
+        if !file.comments.is_empty() {
+            let mut file_data: String = String::new();
+
+            let mut coms: Vec<_> = file.comments.iter().collect();
+            coms.sort_by(|a, b| a.1.index.cmp(&b.1.index));
+            for com in file.comments {
+                if !((com.1.kind == "TODO" && (any || todo)) ||
+                        (com.1.kind == "NOTE" && (any || note)) ||
+                        (com.1.kind == "FIXME" && (any || fixme))) { continue; }
+
+                let mut kind_color = color::Color::Yellow;
+                match com.1.kind.as_str() {
+                    "TODO" => kind_color = color::Color::Blue,
+                    "NOTE" => kind_color = color::Color::Green,
+                    "FIXME" => kind_color = color::Color::Red,
+                    _ => {}
+                }
+                //let id = color::paint_str(c.id, color::Color::Yellow);
+                let kind = color::paint_str(com.1.kind, kind_color);
+                let index = color::paint_str(com.1.index.add(1).to_string(), color::Color::Cyan);
+
+                file_data += &format!(" {}: [{}] - {}\n", index, kind, com.1.line);
+            }
+
+            if !file_data.is_empty() {
+                println!();
+                let path = color::paint_str(file.path.to_string(), color::Color::Cyan);
+                println!(" == {} ==", path);
+                print!("{}", file_data);
+            }
+        }
+    }
     println!();
 }
 
-/// About scan()
+/// About |scan()|
 /// This is the functoin that runs every time you trying to get list of comments, task or 'about' blocks
 /// It have a hash check, so if file wasn't changed, instead of paring it all again, it just returns an old one
 pub fn scan() {
@@ -127,9 +132,12 @@ pub fn scan() {
 
     let config = config::read_config();
     let storage = storage::load_storage();
-    let tasks = storage.tasks;
     let mut new_storage = storage::new_storage();
+
+    let tasks = storage.tasks;
+    let objects = storage.objects;
     new_storage.tasks = tasks;
+    new_storage.objects = objects;
 
 
     let home_path = Path::new(".");
@@ -159,7 +167,7 @@ pub fn scan() {
                                 new = true;
                             }
 
-                            file = parser::parse_file(&file, new, false);
+                            file = parser::parse_file(&mut new_storage, &file, new, false);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }

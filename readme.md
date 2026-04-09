@@ -24,6 +24,8 @@ You can run `--help` with any command for more informaton
 
 ### About
 
+#### General usage
+
 v0.3.0 turns Chant into an autodoc tool!
 You can add this kind of comments, and they will be saved in storage
 ```rs
@@ -42,6 +44,40 @@ You can find examples of those files in this repo:
  - [src/services/about.md](src/services/about.md)
  - [src/about.md](src/about.md)
 
+#### Linking
+
+You can declare and object be playcing it in between of `|` symbol, and reference it with later
+Example:
+1. code:
+```rs
+/// About |foo()|
+/// Does something cool
+fn foo() {}
+
+/// About |bar()|
+/// calles [foo()] to do something even better
+fn bar(){
+    let f = foo()
+    // ...
+}
+```
+
+2. result:
+```makrdown
+...
+#### *About* [foo()](file.rs#L1)
+Does something cool
+
+#### *About* [bar()](file.rs#L5)
+calles [foo()](file.rs#L1) to do something even better
+...
+```
+
+Real example you can find here:
+- [COMMENT_PATTERN](src/about.md#L15)
+- [ABOUT_COMMENT](src/about.md#L16)
+
+
 ### Task
 
 Tasks were appeared in v0.2.0. Essentially, it's a simple 'todo' app inside Chant
@@ -54,10 +90,10 @@ Tasks were appeared in v0.2.0. Essentially, it's a simple 'todo' app inside Chan
 ### Config
 
 Now in `.chant/config.toml` chant stores 2 blocks:
-1 `[scanner]`:
+1. `[scanner]`:
     1. list of supported files (extentions)
     2. list of ignored directories
-2 `[about]`
+2. `[about]`
     1. name of the files with 'about' blocks
 
 You can modify both of this, but be careful, chant **doesn't** supports languages, where comments are not started with `//`. I'll add this later

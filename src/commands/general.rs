@@ -1,17 +1,9 @@
-use crate::{services::color, services::config, commands::scan::scan_force};
+use crate::{services::color, services::config, commands::scan};
 use std::fs;
 
-
-/// About general.rs
-/// I don't rly know why I keep it here, and not spread all of those functons across the services
-/// But here is a list some useful functoins:
-/// [is_gitignore_exists] - checking for `.gitignore` file existance
-/// [nothing_was_found] - simple notificatoin. Used when scaner function didn't found anything
-/// [init_first] - also notificaton, showed when chant wasn't initializes, but called feature required it
-/// [is_initialized] - checking if `.chant/` directory is exists
-/// [bad_syntax] - used to show used that he fked up
-/// [reset] - resets the config, and runs forced scan
-
+/// About |is_gitignore_exists()|
+/// used to check, if `.gitignore` file is in project
+/// If captures an error - returns `false` by default
 pub fn is_gitignore_exists() -> bool {
     let ex = fs::exists("./.gitignore");
     match ex {
@@ -20,11 +12,16 @@ pub fn is_gitignore_exists() -> bool {
     }
 }
 
+/// About |nothing_was_found()|
+/// Used to print notification, when scan result or tasks list is empty
 pub fn nothing_was_found() {
     let nothing = color::paint_str("Nothing".to_string(), color::Color::Yellow);
     println!("{nothing} was found\n");
 }
 
+/// About |init_first()|
+/// Asking to run `chant init`, before using chant
+/// Hollow chant can be used only for displaying all of the comments (TODO, NOTE and FIXME), but everything else is required an initialization
 pub fn init_first() {
     let error = color::paint_str("Error:".to_string(), color::Color::Red);
     let chant_init = color::paint_str("chant init".to_string(), color::Color::Yellow);
@@ -32,6 +29,9 @@ pub fn init_first() {
     println!("{error} chant wasn't initialized. Run {chant_init} first, or use {chant_run_hollow} to run chant without initialization");
 }
 
+/// About |is_initialized()|
+/// checks if Chant was initialized in the directory
+/// by default returns false
 pub fn is_initialized() -> bool {
     let ex = fs::exists("./.chant");
     match ex {
@@ -40,19 +40,25 @@ pub fn is_initialized() -> bool {
     }
 }
 
+/// About |bad_syntax()|
+/// displays and notificatoin when chant can't parce an args
 pub fn bad_syntax() {
     let error = color::paint_str("Error:".to_string(), color::Color::Red);
     let chant_help = color::paint_str("chant --help".to_string(), color::Color::Yellow);
     println!("{error} bad syntax. Run {chant_help} to get more information");
 }
 
+/// About |reset()|
+/// checks if [is_initialized()] is true
+/// used to reset config by calling [create_config()] and [scan_force()]
+/// Can be useful after some updates, where config structure is changed
 pub fn reset() {
     if !is_initialized() {
         init_first();
         return;
     }
     config::create_config();
-    scan_force();
+    scan::scan_force();
 
     let chant = color::paint_str("Chant".to_string(), color::Color::Green);
     let config_dir = color::paint_str(".chant/config.toml".to_string(), color::Color::Cyan);

@@ -1,8 +1,11 @@
 use std::{collections::HashMap, fs, path};
 use ignore::WalkBuilder;
-use crate::{commands::{general, scan}, services::{config, color}, storage};
+use regex::Regex;
+use crate::{commands::{general, scan}, services::{color, config, link::{self, create_obj_link}}, storage};
 
-/// About: list()
+const LINK_PATTERN: &str = r"(\[[a-zA-Z0-9_\(\)]*\])";
+
+/// About: |list()|
 /// This func is displaying all found 'about'
 /// Not rly useful, you better call `chant about -s` to save output to a file
 pub fn list() {
@@ -35,32 +38,25 @@ pub fn list() {
                 let index = color::paint_str(about.index.to_string(), color::Color::Cyan);
                 let border = color::paint_str("|".to_string(), color::Color::Cyan);
 
-                let mut first: bool = true;
-                for line in &about.lines {
-                    if first {
-                        let split = line.split_once(" ");
-                        match split {
-                            Some(v) => {
-                                let header = color::paint_str(v.0.to_string(), color::Color::Blue);
-                                let topic = color::paint_str(v.1.to_string(), color::Color::Yellow);
-                                println!(" {} {} {}", index , header, topic);
-                            }
-                            None => {
-                                println!(" {}{} {}",spaces, border, line);
-                            }
-                        }
-                        first = false;
-                    } else {
-                        println!(" {}{} {}",spaces, border, line);
+                let split = about.header.split_once(" ");
+                match split {
+                    Some(v) => {
+                        let header = color::paint_str(v.0.to_string(), color::Color::Blue);
+                        let topic= color::paint_str(v.1.to_string(), color::Color::Yellow);
+                        println!(" {} {} {}", index , header, topic);
                     }
+                    None => { }
                 }
-                println!();
+                for line in &about.lines {
+                        println!(" {}{} {}",spaces, border, line);
+                }
             }
+            println!();
         }
     }
 }
 
-// About save(output: String)
+// About |save()|
 // This functions is used to save all found 'About' blocks into files
 // By default it creates files in every directory, with name "about.md"
 // This can be changed by providing different name with flagh -s
@@ -72,7 +68,7 @@ pub fn save(output: Option<String>) {
     }
 
     scan::scan();
-    let s = storage::load_storage();
+    let mut s = storage::load_storage();
     if s.files.is_empty() {
         general::nothing_was_found();
         return;
@@ -99,15 +95,17 @@ pub fn save(output: Option<String>) {
         None => { o = cfg.about.output; }
     }
 
-    let mut files: Vec<_> = s.files.iter().collect();
+    let tmp = &s.clone();
+    let mut files: Vec<_> = tmp.files.iter().collect();
     files.sort_by(|a, b| a.0.cmp(&b.0));
-    let dir_to_about = create_about_structures(files, &o);
+
+    let dir_to_about = create_about_structures(&mut s, files, &o);
 
     save_abouts(dir_to_about);
     println!();
 }
 
-/// About remove_old_about_files
+/// About |remove_old_about_files()|
 /// I need this to rewrite new 'about' blocks
 /// Maybe i'll add some sort of check, to not rewrite file if nothing was changed in about's. Idk, we'll see
 /// Now this is fine, ig
@@ -136,7 +134,6 @@ fn remove_old_about_files(output: &str) {
                             Err(_) => { }
                         }
                     }
-
                 }
             },
             Err(_) => { continue; }
@@ -145,20 +142,22 @@ fn remove_old_about_files(output: &str) {
 }
 
 
-/// About create_about_structures
-/// This func is used to create hash map 'dir' to 'file content'
+/// About |create_about_structures()|
+/// This func is used to create hash map dir to 'file content'
 /// both represented as strings
-fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) -> HashMap<String, String> {
+fn create_about_structures(s: &mut storage::Storage, files: Vec<(&String, &storage::File)>, output: &str) -> HashMap<String, String> {
     let mut dir_to_about: HashMap<String, String> = HashMap::new();
     for file in files {
         if file.1.abouts.is_empty() {
             continue;
         }
+
         let cur_dir = path::Path::new(&file.1.dir).join(output).to_str().unwrap().to_string();
         if !dir_to_about.contains_key(&cur_dir) {
             let dir_header = format!("# **{}**\n", &file.1.dir);
             dir_to_about.insert(cur_dir.clone(), dir_header);
         }
+
         let md_file = dir_to_about.get_mut(&cur_dir).unwrap();
         let file_header = format!("\n## **== {} ==**\n", &file.1.path.trim());
         md_file.push_str(&file_header);
@@ -167,7 +166,7 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
             let split = about.header.split_once(" ");
             match split {
                 Some(v) => {
-                    let topic = create_topic_link(v.1.trim(), about.index, &file.1.path.trim());
+                    let topic = link::create_obj_link(v.1.trim(), about.index, &file.1.path.trim(), None);
                     md_file.push_str(&format!("\n#### *{}* {}\n", v.0.trim(), topic));
                 }
                 None => {}
@@ -176,7 +175,8 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
             let mut i = 0;
             for line in &about.lines {
                 i += 1;
-                md_file.push_str(&line.trim());
+                let data = connect_links(s, line.trim(), &cur_dir);
+                md_file.push_str(&data);
                 if i != about.lines.len() {
                     md_file.push_str("\\\n");
                 }
@@ -188,17 +188,13 @@ fn create_about_structures(files: Vec<(&String, &storage::File)>, output: &str) 
     return dir_to_about;
 }
 
-/// About create_topic_link()
-/// just a small helper func, to create markdown link to each 'about' blocks in the source code
-fn create_topic_link(topic: &str, index: i32, path: &str) -> String {
-    let filename = path::Path::new(path).file_name().unwrap().to_string_lossy();
-    let link = format!("[{}]({}#L{})", topic, filename, index);
-    return link;
-}
-
-/// About save_abouts()
+/// About |save_abouts()|
 /// used builded `dir_to_about` hash_map to create new files
 fn save_abouts(dir_to_about: HashMap<String, String>) {
+    if dir_to_about.is_empty() {
+        general::nothing_was_found();
+        return;
+    }
     for dir in dir_to_about {
         let about_path = path::Path::new(&dir.0);
         let write = fs::write(about_path, &dir.1);
@@ -214,6 +210,36 @@ fn save_abouts(dir_to_about: HashMap<String, String>) {
                 println!(" {} unable to create file {}\n{}", error, filename, e);
             }
         }
-
     }
+}
+
+/// About |connect_links()|
+/// used to replace found objects, with markdown links
+fn connect_links(s: &mut storage::Storage, line: &str, dir: &str) -> String{
+    let re_link = Regex::new(LINK_PATTERN).unwrap();
+
+    let res = re_link.replace_all(line, |caps: &regex::Captures| {
+        let mut c_obj = caps[0].chars();
+        let mut path = caps[0].to_string();
+        let mut index: i32 = 0;
+        c_obj.next();
+        c_obj.next_back();
+        if s.objects.contains_key(c_obj.as_str()) {
+            let p:Vec<&str>  = s.objects.get(c_obj.as_str()).unwrap().split_whitespace().collect();
+            let first = p.get(0);
+            let second = p.get(1);
+
+            match first {
+                Some( v) => { path = v.to_string(); }
+                None => {}
+            }
+            match second {
+                Some( v) => { index = v.parse().unwrap(); }
+                None => {}
+            }
+        }
+        let link = create_obj_link(&caps[0], index, dir, Some(path));
+        return link;
+    });
+    return res.to_string();
 }

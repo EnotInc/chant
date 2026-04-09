@@ -5,24 +5,24 @@ use serde::{Deserialize, Serialize};
 
 use crate::{services::hash, services::color};
 
-/// About storage
+/// About |Storage|
 /// main data sctructure. Contains 2 maps: files, and tasks
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Storage {
     pub files: HashMap<String, File>,
     pub tasks: HashMap<String, Task>,
+    pub objects: HashMap<String, String>,
 }
 
 pub fn new_storage() -> Storage {
-    return Storage { files: HashMap::new() , tasks: HashMap::new()};
+    return Storage { files: HashMap::new() , tasks: HashMap::new(), objects: HashMap::new() };
 }
 
-
-/// About About
-/// Here is how 'about' blocks saved
-/// `header` - string with 'About' in line
-/// `index` - number of header line in file
-/// `lines` - vector of lines
+/// About |About|
+/// Here is how 'About' blocks saved
+/// |header| - string with "About' in line
+/// |index| - number of header line in file
+/// |lines| - vector of lines
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct About {
     pub lines: Vec<String>,
@@ -34,11 +34,11 @@ pub fn new_about(index: i32) -> About {
     return About{lines: Vec::new(), header: String::new(), index};
 }
 
-/// About Task
+/// About |Task|
 /// Used to save local task
-/// `id` - used to work with taks ('chant done <id>' and 'chant remove <id>'). It just a first 6 digits of hash
-/// `text` - just a content
-/// `done` - is it done or not
+/// |id| - used to work with taks (`chant done <id>` and `chant remove <id>`). It just a first 6 digits of hash
+/// |text| - just a content
+/// |done| - is it done or not
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Task {
     pub id: String,
@@ -53,18 +53,18 @@ pub fn new_task(text: String, ) -> Task {
 
 /// About File
 /// Created for each file, that scanner checks. It contains all of necessary data for chant to work with
-/// `hash` - used to chech if file changed or not
-/// `path` - path from root of repo to the file
-/// `dir` - relative path to directory with file
-/// `comments` - map of found comments (todo, note and fixme). It used hash as key, so I can change if line is changed or not
-/// `abouts` - vector of 'about' blocks
+/// |hash| - used to chech if file changed or not
+/// |path| - path from root of repo to the file
+/// |dir| - relative path from directory to file
+/// |comments| - map of found comments (todo, note and fixme). It used hash as key, so I can change if line is changed or not
+/// |abouts| - vector of 'about' blocks
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct File {
     pub hash: u64,
     pub path: String,
     pub dir: String,
     pub comments: HashMap<u64, Comment>,
-    pub abouts: Vec<About>,
+    pub abouts: Vec<About>,    
 }
 
 pub fn new_file(path: String) -> File {
@@ -75,16 +75,15 @@ pub fn new_file(path: String) -> File {
         Ok(v) => { c = v }
         Err(e) => { println!("Unable to open file at :{path}\n{e}"); }
     }
-    return File{hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new()}
+    return File{ hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new() }
 }
-
 
 /// About Comment
 /// Contains a data about every comment
-/// `id` - now used now
-/// `kind` - TODO / NOTE / FIXME
-/// `index` - line with commend 
-/// `hash` - hash of the line
+/// |id| - now used now
+/// |kind| - TODO / NOTE / FIXME
+/// |index| - line with commend 
+/// |hash| - hash of the line
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Comment {
     pub id: String,
