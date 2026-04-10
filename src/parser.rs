@@ -3,6 +3,8 @@ use regex::Regex;
 
 use crate::{services, storage};
 
+// TODO: change regex to support '//!' comments
+
 /// About: constants
 /// |COMMENT_PATTERN| - used to find TODO, NOTE and FIXME comments
 /// |ABOUT_PATTERN| - used to find 'About' line
@@ -83,6 +85,8 @@ fn parse_comment(re: Regex, file: &storage::File, line: &str, index: i32, new_fi
         }
     }
 }
+
+// TODO: Add add conflict if 2 objects with similar name is declared
 
 /// About: |parse_about()|
 /// used to find 'about' blocks in the file to save them

@@ -178,7 +178,10 @@ fn create_about_structures(s: &mut storage::Storage, files: Vec<(&String, &stora
                 let data = connect_links(s, line.trim(), &cur_dir);
                 md_file.push_str(&data);
                 if i != about.lines.len() {
-                    md_file.push_str("\\\n");
+                    if !line.contains("```") {
+                        md_file.push_str("\\");
+                    }
+                    md_file.push_str("\n");
                 }
             }
             md_file.push_str("\n\n---\n");

@@ -63,6 +63,6 @@ contains little func get_hash, witch takes a &String as an arg and returns hash 
 ## **== .\src\services\link.rs ==**
 
 #### *About* [|create_obj_link()|](link.rs#L4)
-Small helper func, to create markdown link to the source code
+Small helper func, to create markdown link
 
 ---

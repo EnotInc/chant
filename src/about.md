@@ -2,7 +2,7 @@
 
 ## **== .\src\parser.rs ==**
 
-#### *About* [constants](parser.rs#L6)
+#### *About* [constants](parser.rs#L8)
 |COMMENT_PATTERN| - used to find TODO, NOTE and FIXME comments\
 |ABOUT_PATTERN| - used to find 'About' line\
 |DETAILS_PATTERN| - used to separate comment symbols (//) and text\
@@ -10,20 +10,20 @@
 
 ---
 
-#### *About* [parse_line()](parser.rs#L38)
+#### *About* [parse_line()](parser.rs#L40)
 used to parse 1 line\
-if line is matched [COMMENT_PATTERN](parser.rs#L7), it called [parse_comment()](parser.rs#L71)\
-if line is matched [ABOUT_PATTERN](parser.rs#L8), it called [parse_about()](parser.rs#L87)
+if line is matched [COMMENT_PATTERN](parser.rs#L9), it called [parse_comment()](parser.rs#L73)\
+if line is matched [ABOUT_PATTERN](parser.rs#L10), it called [parse_about()](parser.rs#L91)
 
 ---
 
-#### *About* [|parse_comment()|](parser.rs#L71)
+#### *About* [|parse_comment()|](parser.rs#L73)
 uset to find TODO, NOTE and FIXME comments\
 it's eather creates a new comment, and insert it, or returns an old one
 
 ---
 
-#### *About* [|parse_about()|](parser.rs#L87)
+#### *About* [|parse_about()|](parser.rs#L91)
 used to find 'about' blocks in the file to save them\
 return storage::About
 

@@ -29,12 +29,12 @@ both represented as strings
 
 ---
 
-#### *About* [|save_abouts()|](about.rs#L191)
+#### *About* [|save_abouts()|](about.rs#L194)
 used builded `dir_to_about` hash_map to create new files
 
 ---
 
-#### *About* [|connect_links()|](about.rs#L216)
+#### *About* [|connect_links()|](about.rs#L219)
 used to replace found objects, with markdown links
 
 ---
