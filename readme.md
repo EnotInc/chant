@@ -13,7 +13,7 @@ Chant is a little cli tool to work with comments and generate documentation
 
 Main commands:
 - `chant init` to initialize chant. It creates `.chant/` directory and adds it to the `.gitignore` file
-- `chant` or `chant list` - display all found comments 
+- `chant` or `chant list` - display all found comments
 - `chant scan` - forced scan without hash checking
 - `chant config` - display current config
 - `chant dismiss` - removes `.chant/` dir and removes it from `.gitignore` file
@@ -63,7 +63,7 @@ fn bar(){
 ```
 
 2. result:
-```makrdown
+```markdown
 ...
 #### *About* [foo()](file.rs#L1)
 Does something cool

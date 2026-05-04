@@ -3,15 +3,13 @@ use regex::Regex;
 
 use crate::{services, storage};
 
-// TODO: change regex to support '//!' comments
-
 /// About: constants
 /// |COMMENT_PATTERN| - used to find TODO, NOTE and FIXME comments
 /// |ABOUT_PATTERN| - used to find 'About' line
 /// |DETAILS_PATTERN| - used to separate comment symbols (//) and text
 /// |OBJECT_PATTERN| - used to find object (variables, and func names) in line
-const COMMENT_PATTERN: &str = r".*//\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
-const ABOUT_PATTERN: &str = r".*//\s?(About)[:\s]*(.*)";
+const COMMENT_PATTERN: &str = r".*//.?\s?(TODO|NOTE|FIXME)[:\s]*(.*)";
+const ABOUT_PATTERN: &str = r"[!\*\?]//\s?(About)[:\s]*(.*)";
 const DETAILS_PATTERN: &str = r"(\s?[\/]*)\s(.*)";
 const OBJECT_PATTERN: &str = r"(\|[a-zA-Z0-9_\(\)]*\|)";
 
@@ -27,8 +25,8 @@ pub fn parse_file(s: &mut storage::Storage, file: &storage::File, is_new_file: b
                 let mut index: i32 = 0;
                 let mut about: Option<storage::About> = None;
                 for line in lines {
-                    index += 1;
                     about = parse_line(s, file, line, index, &mut new_file, &mut about, hollow);
+                    index += 1;
                 }
             }
             return new_file;

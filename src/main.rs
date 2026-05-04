@@ -113,7 +113,7 @@ enum TaskOpt {
 
 // Examples of
 // NOTE: some note
-// TODO: this is todo
+// TODO: this is a todo
 // FIXME: and here is a fixme
 
 fn main() {

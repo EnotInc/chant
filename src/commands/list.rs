@@ -3,9 +3,9 @@ use std::{ops::Add};
 use crate::{services::color, storage, commands::general, commands::scan, commands::task};
 
 pub fn list_both() {
-    let gt = color::paint_str("Global Tasks".to_string(), color::Color::Blue);
+    let gt = color::paint_str("Tasks".to_string(), color::Color::Blue);
     println!("    {}",gt);
-    println!(" ~~~~~~~~~~~~~~~~~~ ");
+    println!(" ~~~~~~~~~~~ ");
     task::print_tasks();
 }
 
@@ -38,7 +38,7 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
         for (_, comment) in coms {
             if !((comment.kind == "TODO" && (any || todo)) ||
                  (comment.kind == "NOTE" && (any || note)) ||
-                 (comment.kind == "FIXME" && (any || fixme))) { continue; }
+                 (comment.kind == "FIXME"&& (any || fixme))) { continue; }
 
             is_empty = false;
             let c: storage::Comment = comment.clone();

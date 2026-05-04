@@ -31,7 +31,7 @@ pub struct About {
 }
 
 pub fn new_about(index: i32) -> About {
-    return About{lines: Vec::new(), header: String::new(), index};
+    return About { lines: Vec::new(), header: String::new(), index };
 }
 
 /// About |Task|
@@ -48,7 +48,7 @@ pub struct Task {
 
 pub fn new_task(text: String, ) -> Task {
     let hash = hash::get_hash(&text);
-    return Task{text, done: false, id:get_id(hash)}
+    return Task { text, done: false, id:get_id(hash) }
 }
 
 /// About File
@@ -75,7 +75,7 @@ pub fn new_file(path: String) -> File {
         Ok(v) => { c = v }
         Err(e) => { println!("Unable to open file at :{path}\n{e}"); }
     }
-    return File{ hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new() }
+    return File { hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new() }
 }
 
 /// About Comment
@@ -94,7 +94,7 @@ pub struct Comment {
 }
 
 pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment{kind: kind, line: line, index: index, hash: hash, id: get_id(hash)}
+    return Comment { kind: kind, line: line, index: index, hash: hash, id: get_id(hash) }
 }
 
 fn get_id(hash: u64) -> String {
