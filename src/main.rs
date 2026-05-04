@@ -81,7 +81,7 @@ enum Cmds {
         save: Option<Option<String>>,
     },
 
-    /// list all projects where chant is Initialized
+    /// list of projecst. Shows status (is chant initialized or not), name and paht
     Stave {
         /// add current directory as a chant project (also added with 'chant init')
         #[arg(short, long)]
@@ -152,13 +152,13 @@ fn main() {
         Some(Cmds::Stave { track, remove }) => {
             // NOTE: I don't rly like how this turns out, but this is fine for now, I guess
             if track && !remove {
-                commands::projects::add_this();
+                commands::stave::add_this();
             } else if remove && !track {
-                commands::projects::remove_this();
+                commands::stave::remove_this();
             } else if remove && track {
                 println!("You cannot use both flags at the same time");
             } else {
-                commands::projects::projects();
+                commands::stave::projects();
             }
         }
         Some(Cmds::About { save }) => {

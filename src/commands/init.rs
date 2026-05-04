@@ -24,9 +24,7 @@ pub fn init(){
     scan::scan_force();
 
     if let Ok(cur_dir) = env::current_dir(){
-        if let Some (dir) = cur_dir.file_name() {
-            global::add_project(&dir.to_string_lossy().to_string());
-        }
+        global::add_project(&cur_dir.to_string_lossy().to_string());
     }
 
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);

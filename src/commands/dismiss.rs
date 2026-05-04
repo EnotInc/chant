@@ -11,9 +11,7 @@ pub fn dismiss() {
     remove_from_gitignore();
 
     if let Ok(cur_dir) = env::current_dir(){
-        if let Some (dir) = cur_dir.file_name() {
-            global::remove_project(&dir.to_string_lossy().to_string());
-        }
+        global::remove_project(&cur_dir.to_string_lossy().to_string());
     }
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
     println!("{chant} was removed");
