@@ -1,7 +1,7 @@
 use hf;
-use std::fs;
+use std::{env, fs};
 
-use crate::{services::color, services::config, commands::general, commands::scan};
+use crate::{commands::{general, scan}, services::{color, config, global}};
 
 pub fn init(){
     if !general::is_initialized(){
@@ -22,6 +22,12 @@ pub fn init(){
 
     add_to_gitignore();
     scan::scan_force();
+
+    if let Ok(cur_dir) = env::current_dir(){
+        if let Some (dir) = cur_dir.file_name() {
+            global::add_project(&dir.to_string_lossy().to_string());
+        }
+    }
 
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
     println!("{chant} was initialized successfully");

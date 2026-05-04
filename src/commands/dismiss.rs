@@ -1,6 +1,6 @@
-use std::fs;
+use std::{env, fs};
 
-use crate::{services::color, commands::general};
+use crate::{commands::general, services::{color, global}};
 
 pub fn dismiss() {
     if !general::is_initialized() {
@@ -9,6 +9,12 @@ pub fn dismiss() {
     }
     let _ = fs::remove_dir_all("./.chant");
     remove_from_gitignore();
+
+    if let Ok(cur_dir) = env::current_dir(){
+        if let Some (dir) = cur_dir.file_name() {
+            global::remove_project(&dir.to_string_lossy().to_string());
+        }
+    }
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
     println!("{chant} was removed");
 }

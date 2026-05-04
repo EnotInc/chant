@@ -6,3 +6,4 @@ pub mod init;
 pub mod scan;
 pub mod task;
 pub mod about;
+pub mod projects;
