@@ -36,7 +36,7 @@ pub fn scan_force() {
                     } else if !ft.is_dir() && !config.scanner.ignore.contains(&file_name.to_string()) && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&mut new_storage, &file, true, false);
+                            file = parser::parse_file(&file, true);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }
@@ -63,7 +63,6 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
         .git_exclude(true)
         .hidden(false).build();
 
-    let mut temp_storage = storage::new_storage();
     let mut temp_files: Vec<storage::File> = Vec::new();
     for entry in walker {
         match entry {
@@ -76,7 +75,7 @@ pub fn scan_hollow(todo: bool, note: bool, fixme: bool) {
                     } else if !ft.is_dir() && let Some(ext) = e.path().extension() {
                         if config.scanner.read.contains(&ext.display().to_string()){
                             let mut file = storage::new_file(path.to_string());
-                            file = parser::parse_file(&mut temp_storage, &file, true, true);
+                            file = parser::parse_file(&file, true);
                             temp_files.push(file);
                         }
                     }
@@ -167,7 +166,7 @@ pub fn scan() {
                                 new = true;
                             }
 
-                            file = parser::parse_file(&mut new_storage, &file, new, false);
+                            file = parser::parse_file(&file, new);
                             new_storage.files.insert(path.to_string(), file);
                         }
                     }

@@ -18,22 +18,6 @@ pub fn new_storage() -> Storage {
     return Storage { files: HashMap::new() , tasks: HashMap::new(), objects: HashMap::new() };
 }
 
-/// About |About|
-/// Here is how 'About' blocks saved
-/// |header| - string with "About' in line
-/// |index| - number of header line in file
-/// |lines| - vector of lines
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct About {
-    pub lines: Vec<String>,
-    pub header: String,
-    pub index: i32,
-}
-
-pub fn new_about(index: i32) -> About {
-    return About { lines: Vec::new(), header: String::new(), index };
-}
-
 /// About |Task|
 /// Used to save local task
 /// |id| - used to work with taks (`chant done <id>` and `chant remove <id>`). It just a first 6 digits of hash
@@ -64,7 +48,6 @@ pub struct File {
     pub path: String,
     pub dir: String,
     pub comments: HashMap<u64, Comment>,
-    pub abouts: Vec<About>,    
 }
 
 pub fn new_file(path: String) -> File {
@@ -75,7 +58,7 @@ pub fn new_file(path: String) -> File {
         Ok(v) => { c = v }
         Err(e) => { println!("Unable to open file at :{path}\n{e}"); }
     }
-    return File { hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new(), abouts: Vec::new() }
+    return File { hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new() }
 }
 
 /// About Comment

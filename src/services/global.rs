@@ -82,7 +82,7 @@ pub fn list_projects() {
         match content {
             Ok(v) => {
                 let lines = v.split("\n");
-                println!("All projects with chant:");
+                println!("Projects:");
                 for line in lines {
                     if !line.is_empty(){
                         let name = color::paint_str(get_name(&line), color::Color::Cyan);
@@ -92,7 +92,7 @@ pub fn list_projects() {
                             status = color::paint_str(String::from("v"), color::Color::Green);
                         }
 
-                        println!(" - {} [{}] {}", status, name, line)
+                        println!(" {} [{}] {}", status, name, line)
                     }
                 }
             },

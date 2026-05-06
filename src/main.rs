@@ -74,13 +74,6 @@ enum Cmds {
         option: Option<TaskOpt>,
     },
 
-    /// Display all 'about' comments
-    About {
-        /// save all 'about' blocks to the files (per folder)
-        #[arg(short, long)]
-        save: Option<Option<String>>,
-    },
-
     /// list of projecst. Shows status (is chant initialized or not), name and paht
     Stave {
         /// add current directory as a chant project (also added with 'chant init')
@@ -159,17 +152,6 @@ fn main() {
                 println!("You cannot use both flags at the same time");
             } else {
                 commands::stave::projects();
-            }
-        }
-        Some(Cmds::About { save }) => {
-            match save {
-                Some(file) => {
-                    match file {
-                        Some(v) => commands::about::save(Some(v)),
-                        None => commands::about::save(None)
-                    }
-                }
-                None => { commands::about::list(); }
             }
         }
         Some(Cmds::Init { }) => commands::init::init(),
