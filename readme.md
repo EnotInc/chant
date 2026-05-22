@@ -22,62 +22,6 @@ You can also run Chant without initializatoin with `chant --hollow` command. Thi
 
 You can run `--help` with any command for more informaton
 
-### About
-
-#### General usage
-
-v0.3.0 turns Chant into an autodoc tool!
-You can add this kind of comments, and they will be saved in storage
-```rs
-/// About foo()
-/// foo bar baz
-pub fn foo() {
-    ...
-}
-```
-
-Those comments can be saved to a files (one file per folder) with `chant about -s [<filename>]` command.
-If you don't provide any filename, chant will create `about.md` files by default.
-When you provide a new filename, it will be saved in config and used later automatically
-You can find examples of those files in this repo:
- - [src/commands/about.md](src/commands/about.md)
- - [src/services/about.md](src/services/about.md)
- - [src/about.md](src/about.md)
-
-#### Linking
-
-You can declare and object be playcing it in between of `|` symbol, and reference it with later
-Example:
-1. code:
-```rs
-/// About |foo()|
-/// Does something cool
-fn foo() {}
-
-/// About |bar()|
-/// calles [foo()] to do something even better
-fn bar(){
-    let f = foo()
-    // ...
-}
-```
-
-2. result:
-```markdown
-...
-#### *About* [foo()](file.rs#L1)
-Does something cool
-
-#### *About* [bar()](file.rs#L5)
-calles [foo()](file.rs#L1) to do something even better
-...
-```
-
-Real example you can find here:
-- [COMMENT_PATTERN](src/about.md#L15)
-- [ABOUT_COMMENT](src/about.md#L16)
-
-
 ### Task
 
 Tasks were appeared in v0.2.0. Essentially, it's a simple 'todo' app inside Chant

@@ -137,8 +137,8 @@ fn main() {
             commands::list::list(cli.todo, cli.note, cli.fixme, cli.both);
             if cli.both {
                 commands::list::list_both();
-                return;
             }
+            return;
         }
     }
     match cli.cmd {
