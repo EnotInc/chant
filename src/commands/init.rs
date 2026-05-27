@@ -1,7 +1,7 @@
 use hf;
 use std::{env, fs};
 
-use crate::{commands::{general, scan}, services::{color, config, global}};
+use crate::{commands::{general, scan}, services::{color, config}};
 
 pub fn init(){
     if !general::is_initialized(){
@@ -24,7 +24,7 @@ pub fn init(){
     scan::scan_force();
 
     if let Ok(cur_dir) = env::current_dir(){
-        global::add_project(&cur_dir.to_string_lossy().to_string());
+        config::add_project(&cur_dir.to_string_lossy().to_string());
     }
 
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);

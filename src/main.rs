@@ -59,9 +59,6 @@ enum Cmds {
         fixme: bool,
     },
 
-    /// print the current config
-    Config {},
-
     /// remove .chant/ directory and remove it from .gitignore
     Dismiss {},
 
@@ -163,7 +160,6 @@ fn main() {
             }
         },
         Some(Cmds::Dismiss { }) => commands::dismiss::dismiss(),
-        Some(Cmds::Config { }) => commands::config::print_config(),
         Some(Cmds::Reset { }) => commands::general::reset(),
         Some(Cmds::Task { option }) => {
             match option {

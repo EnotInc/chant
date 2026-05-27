@@ -1,4 +1,3 @@
-pub mod config;
 pub mod dismiss;
 pub mod general;
 pub mod list;

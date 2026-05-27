@@ -1,6 +1,6 @@
 use std::{env, fs};
 
-use crate::{commands::general, services::{color, global}};
+use crate::{commands::general, services::{color, config}};
 
 pub fn dismiss() {
     if !general::is_initialized() {
@@ -11,7 +11,7 @@ pub fn dismiss() {
     remove_from_gitignore();
 
     if let Ok(cur_dir) = env::current_dir(){
-        global::remove_project(&cur_dir.to_string_lossy().to_string());
+        config::remove_project(&cur_dir.to_string_lossy().to_string());
     }
     let chant = color::paint_str("Chant".to_string(), color::Color::Cyan);
     println!("{chant} was removed");
