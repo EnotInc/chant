@@ -122,7 +122,7 @@ enum TaskOpt {
 
 fn main() {
     let cli = Cli::parse();
-    if cli.todo || cli.note || cli.todo || cli.hollow || cli.both {
+    if cli.todo || cli.note || cli.fixme || cli.hollow || cli.both {
         if cli.hollow && cli.both {
             let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
             let hollow = services::color::paint_str("--hollow".to_string(), services::color::Color::Yellow);
