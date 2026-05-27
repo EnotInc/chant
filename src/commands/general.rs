@@ -53,10 +53,6 @@ pub fn bad_syntax() {
 /// used to reset config by calling [create_config()] and [scan_force()]
 /// Can be useful after some updates, where config structure is changed
 pub fn reset() {
-    if !is_initialized() {
-        init_first();
-        return;
-    }
     config::create_config();
     scan::scan_force();
 

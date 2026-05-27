@@ -15,8 +15,8 @@ Main commands:
 - `chant init` to initialize chant. It creates `.chant/` directory and adds it to the `.gitignore` file
 - `chant` or `chant list` - display all found comments
 - `chant scan` - forced scan without hash checking
-- `chant config` - display current config
 - `chant dismiss` - removes `.chant/` dir and removes it from `.gitignore` file
+- `chant stave` - tack your project. Use `-t` flag to add a new one, or `-r` to remove. `chant init` automatically adds project to the stave
 
 You can also run Chant without initializatoin with `chant --hollow` command. This will not create `.chant/` directory, so not all functions will be available
 
@@ -33,12 +33,10 @@ Tasks were appeared in v0.2.0. Essentially, it's a simple 'todo' app inside Chan
 
 ### Config
 
-Now in `.chant/config.toml` chant stores 2 blocks:
-1. `[scanner]`:
+Now in `~/.chant/config.toml` chant store:
+1. [scanner]:
     1. list of supported files (extentions)
     2. list of ignored directories
-2. `[about]`
-    1. name of the files with 'about' blocks
 
 You can modify both of this, but be careful, chant **doesn't** supports languages, where comments are not started with `//`. I'll add this later
 
