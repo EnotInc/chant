@@ -1,9 +1,9 @@
-use crate::services::color;
+use crate::{commands::general::nothing_was_found, services::color};
 use serde::{Deserialize, Serialize};
 use std::{env::home_dir, fs, path::Path};
 use toml;
 
-const CONFIG_DIR: &str = ".chant_config";
+const CONFIG_DIR: &str = ".chant";
 const PROJECTS: &str = "projects";
 const CONFIG: &str = "config.toml";
 
@@ -66,7 +66,10 @@ pub fn new_config() -> Config {
 
 
 fn save_default_config() -> Config {
-    let cfg = new_config();
+    create_global_dir();
+    create_project();
+
+    let cfg = create_config();
     save_config(cfg.clone());
     return cfg;
 }
@@ -98,22 +101,22 @@ fn create_global_dir() {
         let dir_ex = fs::exists(&path);
         match dir_ex {
             Ok(v) => {
-                if !v {
-                    let _ = fs::create_dir(&path);
-                }
+                if !v { let _ = fs::create_dir(&path); }
             }
             Err(e) => { println!("Error with direcotry:\n{} {}", e, path.to_string_lossy()); }
         }
 
-        let pro_ex = fs::exists(&path);
-        match pro_ex {
-            Ok(v) => {
-                if !v {
-                    path.push(PROJECTS);
-                    let _ = fs::File::create(path);
-                }
-            },
-            Err(e) => { println!("Error with file:\n{} {}", e, path.to_string_lossy()); }
+    }
+}
+
+fn create_project() {
+    if let Some(mut path) = home_dir() {
+        path.push(CONFIG_DIR);
+        path.push(PROJECTS);
+        let res = fs::File::create(path);
+        match res {
+            Ok(_) => {}
+            Err(e) => {println!("{}", e);}
         }
     }
 }
@@ -167,6 +170,11 @@ pub fn list_projects() {
         let content = fs::read_to_string(&path);
         match content {
             Ok(v) => {
+                if v.split("\n").count() <= 1 {
+                    nothing_was_found();
+                    return
+                }
+
                 let lines = v.split("\n");
                 println!("Projects:");
                 for line in lines {
