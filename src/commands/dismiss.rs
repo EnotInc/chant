@@ -17,7 +17,6 @@ pub fn dismiss() {
     println!("{chant} was removed");
 }
 
-/// About remove_from_gitignore()
 /// It simply read `.gitignore` file line by line and creating a new buffer, ignoring line with `.chant` in it
 /// after that I use this buffer to rewrite `.gitignore`
 /// This may cause some trouble, `.gitignore` could not work, and you have to resave it manuanly

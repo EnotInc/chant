@@ -1,7 +1,6 @@
 use crate::{services::color, services::config, commands::scan};
 use std::fs;
 
-/// About |is_gitignore_exists()|
 /// used to check, if `.gitignore` file is in project
 /// If captures an error - returns `false` by default
 pub fn is_gitignore_exists() -> bool {
@@ -12,14 +11,12 @@ pub fn is_gitignore_exists() -> bool {
     }
 }
 
-/// About |nothing_was_found()|
 /// Used to print notification, when scan result or tasks list is empty
 pub fn nothing_was_found() {
     let nothing = color::paint_str("Nothing".to_string(), color::Color::Yellow);
     println!("{nothing} was found\n");
 }
 
-/// About |init_first()|
 /// Asking to run `chant init`, before using chant
 /// Hollow chant can be used only for displaying all of the comments (TODO, NOTE and FIXME), but everything else is required an initialization
 pub fn init_first() {
@@ -29,7 +26,6 @@ pub fn init_first() {
     println!("{error} chant wasn't initialized. Run {chant_init} first, or use {chant_run_hollow} to run chant without initialization");
 }
 
-/// About |is_initialized()|
 /// checks if Chant was initialized in the directory
 /// by default returns false
 pub fn is_initialized() -> bool {
@@ -40,7 +36,6 @@ pub fn is_initialized() -> bool {
     }
 }
 
-/// About |bad_syntax()|
 /// displays and notificatoin when chant can't parce an args
 pub fn bad_syntax() {
     let error = color::paint_str("Error:".to_string(), color::Color::Red);
@@ -48,7 +43,6 @@ pub fn bad_syntax() {
     println!("{error} bad syntax. Run {chant_help} to get more information");
 }
 
-/// About |reset()|
 /// checks if [is_initialized()] is true
 /// used to reset config by calling [create_config()] and [scan_force()]
 /// Can be useful after some updates, where config structure is changed

@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{services::hash, services::color};
 
-/// About |Storage|
 /// main data sctructure. Contains 2 maps: files, and tasks
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Storage {
@@ -18,11 +17,6 @@ pub fn new_storage() -> Storage {
     return Storage { files: HashMap::new() , tasks: HashMap::new(), objects: HashMap::new() };
 }
 
-/// About |Task|
-/// Used to save local task
-/// |id| - used to work with taks (`chant done <id>` and `chant remove <id>`). It just a first 6 digits of hash
-/// |text| - just a content
-/// |done| - is it done or not
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Task {
     pub id: String,
@@ -35,13 +29,6 @@ pub fn new_task(text: String, ) -> Task {
     return Task { text, done: false, id:get_id(hash) }
 }
 
-/// About File
-/// Created for each file, that scanner checks. It contains all of necessary data for chant to work with
-/// |hash| - used to chech if file changed or not
-/// |path| - path from root of repo to the file
-/// |dir| - relative path from directory to file
-/// |comments| - map of found comments (todo, note and fixme). It used hash as key, so I can change if line is changed or not
-/// |abouts| - vector of 'about' blocks
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct File {
     pub hash: u64,
@@ -61,12 +48,6 @@ pub fn new_file(path: String) -> File {
     return File { hash: hash::get_hash(&c), path: path, dir: dir, comments: HashMap::new() }
 }
 
-/// About Comment
-/// Contains a data about every comment
-/// |id| - now used now
-/// |kind| - TODO / NOTE / FIXME
-/// |index| - line with commend 
-/// |hash| - hash of the line
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Comment {
     pub id: String,

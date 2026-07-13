@@ -7,15 +7,13 @@ const CONFIG_DIR: &str = ".chant";
 const PROJECTS: &str = "projects";
 const CONFIG: &str = "config.toml";
 
-/// About |Config|
 /// Main struct for config
-/// Includes [Scanner] and [About]
+/// Includes [Scanner]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Config {
     pub scanner: Scanner,
 }
 
-/// About |Scanner|
 /// `read` - vector of strings, stores a list for supperted file extatoins (without dot '.')
 /// `ignore` - vector of string with ignored files / directories, such as `target/`, `.chant/`, `.git/` and so on
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -24,7 +22,6 @@ pub struct Scanner {
     pub ignore: Vec<String>,
 }
 
-/// About |create_config()|
 /// used to (re)write a config file in `.chant/config.toml` file
 /// called [new_config()] to get default [Config]
 pub fn create_config() -> Config {
@@ -55,7 +52,6 @@ pub fn save_config(cfg: Config) {
     }
 }
 
-/// About |new_config()|
 /// creates a new default [Config]
 pub fn new_config() -> Config {
     let default_read: Vec<String> = vec!["rs".to_string(), "go".to_string(), "js".to_string(), "ts".to_string(), "dart".to_string(), "jsx".to_string(), "tsx".to_string(), "c".to_string(), "cpp".to_string(), "h".to_string(), "hpp".to_string(), "java".to_string()];

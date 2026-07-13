@@ -51,5 +51,5 @@ You can modify both of this, but be careful, chant **doesn't** supports language
 ```bash
 git clone https://github.com/EnotInc/chant.git
 cd chant
-cargo install --path .
+cargo install --path . # --force
 ```
