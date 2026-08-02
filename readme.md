@@ -1,7 +1,7 @@
 # chant
 
 ## About
-Chant is a little cli tool to work with comments and generate documentation
+Chant is a little cli tool for managing microtasks within the project. It keep tracks of comments and sores tasks and their statuses
 
 ## Usage
 
