@@ -160,8 +160,7 @@ pub fn migrate() {
     let _false = Regex::new(r"false").unwrap();
     let _done = Regex::new(r"done").unwrap();
 
-    // TODO: move to storage as "get_path();"
-    let path = "./.chant/storage.json"; 
+    let path = storage::STORAGE_PATH; 
     let read = fs::read_to_string(path);
     match read {
         Ok(v) => {

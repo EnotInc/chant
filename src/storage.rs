@@ -71,10 +71,12 @@ fn get_id(hash: u64) -> String {
     return hash.to_string()[0..6].to_string();
 }
 
+pub const STORAGE_PATH: &str = "./.chant/storage.json";
+
 pub fn save_storage(storage: &Storage) {
     let json = serde_json::to_string(storage);
     match json {
-        Ok(v) => { let _ = fs::write("./.chant/storage.json", v); },
+        Ok(v) => { let _ = fs::write(STORAGE_PATH, v); },
         Err(e) => {
             let error = color::paint_str("Error:".to_string(), color::Color::Red);
             println!("{error} unable to save storage\n{e}")
@@ -83,7 +85,7 @@ pub fn save_storage(storage: &Storage) {
 }
 
 pub fn load_storage() -> Storage {
-    let content = fs::read_to_string("./.chant/storage.json");
+    let content = fs::read_to_string(STORAGE_PATH);
     match content {
         Ok(v) => {
             let res: Result<Storage, serde_json::Error >= serde_json::from_str(&v);
