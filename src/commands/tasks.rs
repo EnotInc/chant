@@ -191,6 +191,11 @@ pub fn print_tasks() {
     }
 
     let s = storage::load_storage();
+    if s.tasks.len() == 0 {
+        general::nothing_was_found();
+        return;
+    }
+
     let mut tasks: Vec<_> = s.tasks.values().collect();
     tasks.sort_by_key(|task| &task.status);
 
