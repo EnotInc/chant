@@ -24,11 +24,16 @@ You can run `--help` with any command for more informaton
 
 ### Task
 
-Tasks were appeared in v0.2.0. Essentially, it's a simple 'todo' app inside Chant
+Tasks were appeared in v0.2.0. Essentially, it's a simple kanban board inside Chant.
+In verion 0.4.3 task structure was changed. You can run `chant task migrage` command to change old task structure for a new one.
+
+List of commands:
 - `chant task` - list of tasks
 - `chant task add/new <message>` - add new task with message
 - `chant task edit <id>` - change task message
-- `chant task done <id>` - mark task as complete
+- `chant task backlog <id>` - set task status to "Backlog"
+- `chant task in-progress <id>` - set task status to "InProgress". Can be used with `chant task working <id>` command
+- `chant task done <id>` - set task status to "Done"
 - `chant task remove <id>` remove one task from storage
 
 ### Config
@@ -43,8 +48,8 @@ You can modify both of this, but be careful, chant **doesn't** supports language
 ### Useful flags
 - `chant` with `-t --todo`, `-n --note`, `-f --fixme` - show specific comments (works with `--hollow` flag) 
 - `chant [list]` with `-b --both` - show both comments and tasks
-- `chant remove --done` - remove every complete task
-- `chant remove --all` - remove all tasks
+- `chant task remove --done` - remove every complete task
+- `chant task remove --all` - remove all tasks
 
 ## Installation
 
