@@ -10,23 +10,29 @@ use crate::{services::hash, services::color};
 pub struct Storage {
     pub files: HashMap<String, File>,
     pub tasks: HashMap<String, Task>,
-    pub objects: HashMap<String, String>,
 }
 
 pub fn new_storage() -> Storage {
-    return Storage { files: HashMap::new() , tasks: HashMap::new(), objects: HashMap::new() };
+    return Storage { files: HashMap::new() , tasks: HashMap::new() };
+}
+
+#[derive(PartialEq, Debug, Deserialize, Serialize, Clone, Ord, PartialOrd, Eq)]
+pub enum Status {
+    Backlog,
+    InProgress,
+    Done,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Task {
     pub id: String,
     pub text: String,
-    pub done: bool,
+    pub status: Status,
 }
 
 pub fn new_task(text: String, ) -> Task {
     let hash = hash::get_hash(&text);
-    return Task { text, done: false, id:get_id(hash) }
+    return Task { text, status: Status::Backlog, id:get_id(hash) }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

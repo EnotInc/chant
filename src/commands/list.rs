@@ -1,12 +1,12 @@
 use std::{ops::Add};
 
-use crate::{services::color, storage, commands::general, commands::scan, commands::task};
+use crate::{services::color, storage, commands::general, commands::scan, commands::tasks};
 
 pub fn list_both() {
     let gt = color::paint_str("Tasks".to_string(), color::Color::Blue);
     println!("    {}",gt);
     println!(" ~~~~~~~~~~~ ");
-    task::print_tasks();
+    tasks::print_tasks();
 }
 
 pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {

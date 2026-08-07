@@ -131,9 +131,7 @@ pub fn scan() {
     let mut new_storage = storage::new_storage();
 
     let tasks = storage.tasks;
-    let objects = storage.objects;
     new_storage.tasks = tasks;
-    new_storage.objects = objects;
 
 
     let home_path = Path::new(".");

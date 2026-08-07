@@ -94,8 +94,18 @@ enum TaskOpt {
     /// mark task as "done" by id
     Done { id: String },
 
+    /// mark task as "InProgress" by id. Command have alias "working"
+    #[command(alias="working")]
+    InProgress { id: String },
+
+    /// mark task as "Backlog" by id
+    Backlog {id: String},
+
     /// edit task message
     Edit { id: String },
+
+    /// migrate old tasks to a new form
+    Migrate,
 
     /// remove task
     Remove {
@@ -163,9 +173,12 @@ fn main() {
         Some(Cmds::Reset { }) => commands::general::reset(),
         Some(Cmds::Task { option }) => {
             match option {
-                Some(TaskOpt::Add { message }) => { commands::task::add_task(message) }
-                Some(TaskOpt::Done { id }) => { commands::task::done_task(id); }
-                Some(TaskOpt::Edit { id }) => { commands::task::edit_task(id); }
+                Some(TaskOpt::Add { message }) => { commands::tasks::add_task(message) }
+                Some(TaskOpt::Done { id }) => { commands::tasks::done_task(id); }
+                Some(TaskOpt::InProgress { id }) => { commands::tasks::progress_task(id); }
+                Some(TaskOpt::Backlog { id }) => { commands::tasks::backlog_task(id); }
+                Some(TaskOpt::Migrate) => { commands::tasks::migrate(); }
+                Some(TaskOpt::Edit { id }) => { commands::tasks::edit_task(id); }
                 Some(TaskOpt::Remove { all, done, id }) => {
                     if all && done {
                         let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
@@ -175,17 +188,17 @@ fn main() {
                         return;
                     }
                     if all {
-                        commands::task::remove_all();
+                        commands::tasks::remove_all();
                     } else if done {
-                        commands::task::remove_done();
+                        commands::tasks::remove_done();
                     } else {
                         match id {
-                            Some(v) => commands::task::remove_task(v),
+                            Some(v) => commands::tasks::remove_task(v),
                             None => commands::general::bad_syntax(),
                         }
                     }
                 }
-                None => { commands::task::print_tasks(); }
+                None => { commands::tasks::print_tasks(); }
             }
         },
         None => commands::list::list(true, true, true, false),
