@@ -89,7 +89,13 @@ enum TaskOpt {
     /// add new task with "message". Command have alias "new"
     #[command(alias="new")]
     Add {
-        message: String
+        message: String,
+
+        #[arg(short, long)]
+        in_progress: bool,
+
+        #[arg(short, long)]
+        done: bool,
     },
 
     /// mark task as "done" by id
@@ -174,7 +180,7 @@ fn main() {
         Some(Cmds::Reset { }) => commands::general::reset(),
         Some(Cmds::Task { option }) => {
             match option {
-                Some(TaskOpt::Add { message }) => { commands::tasks::add_task(message) }
+                Some(TaskOpt::Add { message, in_progress, done }) => { commands::tasks::add_task(message, in_progress, done) }
                 Some(TaskOpt::Done { id }) => { commands::tasks::done_task(id); }
                 Some(TaskOpt::InProgress { id }) => { commands::tasks::progress_task(id); }
                 Some(TaskOpt::Backlog { id }) => { commands::tasks::backlog_task(id); }

@@ -3,15 +3,27 @@ use std::{collections::HashMap, fs, io::{self, Write}};
 
 use crate::{commands::general, services::color, storage::{self, Status}};
 
-pub fn add_task(text: String) {
+pub fn add_task(text: String, inprogress: bool, done: bool) {
     if !general::is_initialized() {
         general::init_first();
         return;
     }
 
     let mut s = storage::load_storage();
-    let t = storage::new_task(text);
+    let mut t = storage::new_task(text);
     let id = &t.id;
+
+
+    if inprogress && done {
+        println!("Can't use both '--done' and  '--in-progress' flags. Status will be set to 'Backlog'")
+    } else {
+        if inprogress {
+            t.status = Status::InProgress;
+        }
+        if done {
+            t.status = Status::Done;
+        }
+    }
 
     if s.tasks.contains_key(id) {
         println!("This taks already exists");
@@ -205,7 +217,7 @@ pub fn print_tasks() {
             Status::Backlog => {
                 if !statuses.contains(&Status::Backlog) {
                     header = color::paint_str("Backlog".to_string(), color::Color::Blue);
-                    println!("{}", header);
+                    println!("\n{}", header);
                 }
                 statuses.push(Status::Backlog);
             }

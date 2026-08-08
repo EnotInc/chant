@@ -30,7 +30,7 @@ pub struct Task {
     pub status: Status,
 }
 
-pub fn new_task(text: String, ) -> Task {
+pub fn new_task(text: String ) -> Task {
     let hash = hash::get_hash(&text);
     return Task { text, status: Status::Backlog, id:get_id(hash) }
 }

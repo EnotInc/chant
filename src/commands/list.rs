@@ -5,7 +5,7 @@ use crate::{services::color, storage, commands::general, commands::scan, command
 pub fn list_both() {
     let gt = color::paint_str("Tasks".to_string(), color::Color::Blue);
     println!("    {}",gt);
-    println!(" ~~~~~~~~~~~ ");
+    print!(" ~~~~~~~~~~~ ");
     tasks::print_tasks();
 }
 
