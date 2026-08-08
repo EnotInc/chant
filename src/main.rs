@@ -7,6 +7,7 @@ mod storage;
 
 
 #[derive(Parser)]
+#[command(version)]
 struct Cli {
     #[command(subcommand)]
     cmd: Option<Cmds>,
