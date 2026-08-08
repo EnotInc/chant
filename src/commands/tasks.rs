@@ -203,6 +203,7 @@ pub fn print_tasks() {
 
     let s = storage::load_storage();
     if s.tasks.len() == 0 {
+        println!();
         general::nothing_was_found();
         return;
     }
