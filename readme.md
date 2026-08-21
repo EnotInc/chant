@@ -16,7 +16,7 @@ Main commands:
 - `chant` or `chant list` - display all found comments
 - `chant scan` - forced scan without hash checking
 - `chant dismiss` - removes `.chant/` dir and removes it from `.gitignore` file
-- `chant stave` - tack your project. Use `-t` flag to add a new one, or `-r` to remove. `chant init` automatically adds project to the stave
+- `chant stave` - tracks your projects. Use `-t` flag to add a new one, or `-r` to remove. `chant init` automatically adds project to the stave
 
 You can also run Chant without initializatoin with `chant --hollow` command. This will not create `.chant/` directory, so not all functions will be available
 
@@ -29,7 +29,7 @@ In verion 0.4.3 task structure was changed (from simple to-do list to a kanban b
 
 List of commands:
 - `chant task` - list of tasks
-- `chant task add/new <message>` - add new task with message
+- `chant task [add|new] <message>` - add new task with message
 - `chant task edit <id>` - change task message
 - `chant task backlog <id>` - set task status to "Backlog"
 - `chant task in-progress <id>` - set task status to "InProgress". You can also use `chant task working <id>` command
@@ -41,7 +41,7 @@ List of commands:
 Now in `~/.chant/config.toml` chant store:
 1. [scanner]:
     1. list of supported files (extentions)
-    2. list of ignored directories
+    2. list of ignored entries
 
 You can modify both of this, but be careful, chant **doesn't** supports languages, where comments are not started with `//`. I'll add this later
 
