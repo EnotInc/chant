@@ -36,11 +36,19 @@ fn add_to_gitignore() {
         let content = fs::read_to_string(".gitignore");
         match content {
             Ok(v) => {
-                let ignore = format!("{}\n.chant", v);
-            let _ = fs::write(".gitignore", ignore);
-        },
-            Err(_) => { return }
-        }
+                let chant = ".chant";
+
+                let lines: Vec<&str> = v.split('\n').collect();
+                let contain = lines.iter().any(|s| *s == chant);
+
+                if !contain {
+                    let ignore = format!("{}\n.chant", v);
+                    let _ = fs::write(".gitignore", ignore);
+                }
+
+            },
+                Err(_) => { return }
+            }
     } else {
         let warn = color::paint_str("Warning:".to_string(), color::Color::Yellow);
         println!("{warn} .gitignore is not found")
