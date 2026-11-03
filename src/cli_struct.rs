@@ -66,13 +66,13 @@ pub enum Cmds {
         option: Option<TaskOpt>,
     },
 
-    /// list of projecst. Shows status (is chant initialized or not), name and paht
+    /// list of projecst. Shows amount of comments, taksk, name (cyan - chant initialized. red - directory was added manually)
     Stave {
-        /// add current directory as a chant project (also added with 'chant init')
+        /// manually add current directory as a chant project (also added with 'chant init')
         #[arg(short, long)]
         track: bool,
 
-        /// remove current directory from projects list (also added with 'chant dismiss')
+        /// manually remove current directory from projects list (also added with 'chant dismiss')
         #[arg(short, long)]
         remove: bool
     }

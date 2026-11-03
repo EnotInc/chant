@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::{fs, path::Path};
 use std::collections::HashMap;
 
@@ -13,7 +14,28 @@ pub struct Storage {
 }
 
 pub fn new_storage() -> Storage {
-    return Storage { files: HashMap::new() , tasks: HashMap::new() };
+    return Storage {
+        files: HashMap::new(),
+        tasks: HashMap::new()
+    };
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Stats {
+    pub todos: u8,
+    pub notes: u8,
+    pub fixmes: u8,
+
+    pub backlog: u8,
+    pub in_progress: u8,
+    pub done: u8,
+}
+
+pub fn new_stats() -> Stats {
+    return Stats {
+        todos: 0, notes: 0, fixmes: 0,
+        backlog: 0, in_progress: 0, done: 0,
+    }
 }
 
 #[derive(PartialEq, Debug, Deserialize, Serialize, Clone, Ord, PartialOrd, Eq)]
@@ -90,12 +112,28 @@ pub fn load_storage() -> Storage {
         Ok(v) => {
             let res: Result<Storage, serde_json::Error >= serde_json::from_str(&v);
             match res {
-                Ok(sorage) => {
-                    return sorage;
-                },
+                Ok(storage) => { return storage; },
                 Err(_) => { return new_storage(); }
             }
         },
         Err(e) => { println!("{}", e); return new_storage() }
+    }
+}
+
+pub fn load_storage_from(p: &str) -> Option<Storage> {
+    let mut path = PathBuf::new();
+    path.push(p);
+    path.push(STORAGE_PATH);
+
+    let content = fs::read_to_string(path);
+    match content {
+        Err(_) => { return None }
+        Ok(v ) => {
+            let res: Result<Storage, serde_json::Error >= serde_json::from_str(&v);
+            match res {
+                Ok(storage) => { return Some(storage); },
+                Err(_) => { return None }
+            }
+        },
     }
 }

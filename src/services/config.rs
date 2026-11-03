@@ -1,4 +1,4 @@
-use crate::{commands::general::nothing_was_found, services::color};
+use crate::{commands::general::nothing_was_found, services::{color, stats::{stats_to_string, get_stats}}, storage};
 use serde::{Deserialize, Serialize};
 use std::{env::home_dir, fs, path::Path};
 use toml;
@@ -172,19 +172,29 @@ pub fn list_projects() {
                 }
 
                 let lines = v.split("\n");
-                println!("Projects:");
                 for line in lines {
-                    if !line.is_empty(){
-                        let name = color::paint_str(get_name(&line), color::Color::Cyan);
-                        let mut status = color::paint_str(String::from("x"), color::Color::Red);
+                    if line.is_empty(){ continue; }
 
-                        if is_initialized(&line) {
-                            status = color::paint_str(String::from("v"), color::Color::Green);
+                    let _name = get_name(&line);
+                    let mut name = color::paint_str(_name.clone(), color::Color::Cyan);
+
+                    let stats: String;
+                    let res = storage::load_storage_from(line);
+                    match res {
+                        None => {
+                            stats = stats_to_string(None);
+                            name = color::paint_str(_name.clone(), color::Color::Red);
                         }
-
-                        println!(" {} [{}] {}", status, name, line)
+                        Some(mut s) => {
+                            let _stats = get_stats(&mut s);
+                            stats = stats_to_string(Some(_stats))
+                        }
                     }
+
+
+                    println!( " {stats} [{name}] {line}")
                 }
+                println!("");
             },
             Err(e) => { println!("Cannot read file:\n{}", e); }
         }
@@ -197,13 +207,4 @@ fn get_name(full_path: &str) -> String {
         return name.to_string_lossy().to_string();
     }
     return String::from(full_path)
-}
-
-fn is_initialized(full_path: &str) -> bool {
-    let path = Path::new(full_path).join(".chant");
-    let ex = fs::exists(path);
-    match ex {
-        Ok(v) => return v,
-        Err(_) => { return false;}
-    }
 }

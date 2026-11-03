@@ -3,6 +3,10 @@ use std::{ops::Add};
 use crate::{services::color, storage, commands::general, commands::scan, commands::tasks};
 
 pub fn list_both() {
+    if !general::is_initialized() {
+        return;
+    }
+
     let gt = color::paint_str("Tasks".to_string(), color::Color::Blue);
     println!("    {}",gt);
     print!(" ~~~~~~~~~~~ ");
