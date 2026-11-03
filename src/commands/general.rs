@@ -1,5 +1,29 @@
 use crate::{services::color, services::config, commands::scan};
-use std::fs;
+use std::{env, fs};
+
+pub fn dont_run_at_home() {
+    let home: std::path::PathBuf;
+    let cur: std::path::PathBuf;
+
+    let res  = env::home_dir();
+    match res {
+        Some(path) => {home = path}
+        None => { return }
+    }
+
+    let res =env::current_dir(); 
+    match res {
+        Ok(path) => { cur = path }
+        Err(_) => { return }
+    }
+
+    if cur == home {
+        let chant = color::paint_str("chant".to_string(), color::Color::Yellow);
+        let dont = color::paint_str("Don't".to_string(), color::Color::Red);
+        println!(" {dont} run {chant} at home (dir)!");
+        std::process::exit( 0);
+    }
+}
 
 /// used to check, if `.gitignore` file is in project
 /// If captures an error - returns `false` by default

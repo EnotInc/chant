@@ -6,9 +6,11 @@ mod parser;
 mod storage;
 mod cli_struct;
 
-use crate::cli_struct::{Cli, Cmds, TaskOpt};
+use crate::{cli_struct::{Cli, Cmds, TaskOpt}, commands::general::dont_run_at_home};
 
 fn main() {
+    dont_run_at_home();
+
     let cli = Cli::parse();
     if cli.todo || cli.note || cli.fixme || cli.hollow || cli.both {
         if cli.hollow && cli.both {
@@ -27,6 +29,7 @@ fn main() {
         commands::list::list(cli.todo, cli.note, cli.fixme, cli.both);
         if cli.both {
             commands::list::list_both();
+            return;
         }
     }
     match cli.cmd {
