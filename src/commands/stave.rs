@@ -2,8 +2,8 @@ use crate::services::config;
 
 use std::env;
 
-pub fn projects() {
-    config::list_projects();
+pub fn projects(short: bool) {
+    config::list_projects(short);
 }
 
 pub fn add_this() {

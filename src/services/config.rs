@@ -1,6 +1,6 @@
 use crate::{commands::general::nothing_was_found, services::{color, stats::{stats_to_string, get_stats}}, storage};
 use serde::{Deserialize, Serialize};
-use std::{env::home_dir, fs, path::Path};
+use std::{env::home_dir, fs, path::{Path, PathBuf}};
 use toml;
 
 const CONFIG_DIR: &str = ".chant";
@@ -158,7 +158,7 @@ pub fn remove_project(full_path: &str) {
     }
 }
 
-pub fn list_projects() {
+pub fn list_projects(short: bool) {
     if let Some(mut path) = home_dir() {
         path.push(CONFIG_DIR);
         path.push(PROJECTS);
@@ -175,22 +175,30 @@ pub fn list_projects() {
                 for line in lines {
                     if line.is_empty(){ continue; }
 
-                    let _name = get_name(&line);
-                    let mut name = color::paint_str(_name.clone(), color::Color::Cyan);
+                    let name: String;
+
+                    let mut local =PathBuf::new();
+                    local.push(line);
+                    local.push(CONFIG_DIR);
+                    match local.exists() { 
+                        true => { name = color::paint_str(get_name(&line), color::Color::Cyan); }
+                        false => { name = color::paint_str(get_name(&line), color::Color::Red); }
+                    } 
+
+                    if short {
+                        println!( "  [{name}] {line}");
+                        continue;
+                    }
 
                     let stats: String;
                     let res = storage::load_storage_from(line);
                     match res {
-                        None => {
-                            stats = stats_to_string(None);
-                            name = color::paint_str(_name.clone(), color::Color::Red);
-                        }
+                        None => { stats = stats_to_string(None); }
                         Some(mut s) => {
                             let _stats = get_stats(&mut s);
                             stats = stats_to_string(Some(_stats))
                         }
                     }
-
 
                     println!( " {stats} [{name}] {line}")
                 }

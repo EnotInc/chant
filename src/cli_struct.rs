@@ -74,7 +74,11 @@ pub enum Cmds {
 
         /// manually remove current directory from projects list (also added with 'chant dismiss')
         #[arg(short, long)]
-        remove: bool
+        remove: bool,
+
+        /// hides info about amount of comments and tasks in projects
+        #[arg(short, long)]
+        short: bool
     }
 }
 

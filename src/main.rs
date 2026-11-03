@@ -38,12 +38,12 @@ fn main() {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::Reset { }) => commands::general::reset(),
-        Some(Cmds::Stave { track, remove }) => {
+        Some(Cmds::Stave { track, remove , short}) => {
             match (track, remove) {
                 (true,  true) => { println!("You cannot use both flags at the same time"); }
                 (true,  false) => { commands::stave::add_this(); }
                 (false, true) => { commands::stave::remove_this(); }
-                (false, false) => { commands::stave::projects(); }
+                (false, false) => { commands::stave::projects(short); }
             }
         }
         Some(Cmds::List { both, todo, note, fixme}) => {
