@@ -9,7 +9,6 @@ pub fn init(){
         let _ = hf::hide("./.chant");
         let _ = fs::File::create("./.chant/storage.json");
 
-        let _ = fs::File::create("./.chant/config.toml");
         let cfg = config::create_config();
         config::save_config(cfg);
     } else {
