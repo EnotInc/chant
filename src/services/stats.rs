@@ -48,8 +48,12 @@ pub fn get_stats(s: &mut Storage) -> Stats {
 pub fn stats_to_string(stats: Option<Stats>) -> String {
     match stats {
         None => {
-            let fill = color::paint_str("- - -".to_string(), color::Color::Yellow);
-            return format!("[ {fill} ] [ {fill} ]");
+            let r = color::paint_str("-".to_string(), color::Color::Red);
+            let b = color::paint_str("-".to_string(), color::Color::Blue);
+            let c = color::paint_str("-".to_string(), color::Color::Cyan);
+            let g = color::paint_str("-".to_string(), color::Color::Green);
+
+            return format!("[ {b} {g} {r} ] [ {b} {c} {g} ]");
         }
         Some(s) => {
             let t = color::paint_str(format!("{}", s.todos).to_string(), color::Color::Blue);

@@ -186,7 +186,7 @@ pub fn list_projects(short: bool) {
                     } 
 
                     if short {
-                        println!( "  [{name}] {line}");
+                        println!(" [{name}] {line}");
                         continue;
                     }
 
