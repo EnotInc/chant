@@ -87,4 +87,5 @@ pub fn print_summary(summary: &Summary) {
     println!("   {t_v} {n_v} {f_c} {fixmes}: {}", summary.fixmes);
     println!("   {t_v} {n_c} {notes}: {}", summary.notes);
     println!("   {t_c} {todos}: {}", summary.todos);
+    println!()
 }

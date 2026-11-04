@@ -13,10 +13,10 @@ Chant is a little cli tool for managing microtasks within the project. It keep t
 
 Main commands:
 - `chant init` to initialize chant. It creates `.chant/` directory and adds it to the `.gitignore` file
-- `chant` or `chant list` - display all found comments
+- `chant [list]` - display all found comments
 - `chant scan` - forced scan without hash checking
 - `chant dismiss` - removes `.chant/` dir and removes it from `.gitignore` file
-- `chant stave` - tracks your projects. Use `-t` flag to add a new one, or `-r` to remove. `chant init` automatically adds project to the stave
+- `chant stave` - tracks (lockaly) information about your projects. Use `-t` flag to add a new one, or `-r` to remove. `chant init` automatically adds project to the stave
 
 You can also run Chant without initializatoin with `chant --hollow` command. This will not create `.chant/` directory, so not all functions will be available
 
@@ -29,10 +29,10 @@ In verion 0.4.3 task structure was changed (from simple to-do list to a kanban b
 
 List of commands:
 - `chant task` - list of tasks
-- `chant task [add|new] <message>` - add new task with message
+- `chant task [add|new] <message> [-i|--in-progress] [-d|--done]` - add new task with message with specified status (backlog by default)
 - `chant task edit <id>` - change task message
 - `chant task backlog <id>` - set task status to "Backlog"
-- `chant task in-progress <id>` - set task status to "InProgress". You can also use `chant task working <id>` command
+- `chant task [in-progress|working] <id>` - set task status to "InProgress"
 - `chant task done <id>` - set task status to "Done"
 - `chant task remove <id>` remove one task from storage
 
@@ -40,14 +40,15 @@ List of commands:
 
 Now in `~/.chant/config.toml` chant store:
 1. [scanner]:
-    1. list of supported files (extentions)
+    1. list of supported files (file extentions)
     2. list of ignored entries
 
 You can modify both of this, but be careful, chant **doesn't** supports languages, where comments are not started with `//`. I'll add this later
 
 ### Useful flags
-- `chant` with `-t --todo`, `-n --note`, `-f --fixme` - show specific comments (works with `--hollow` flag) 
-- `chant [list]` with `-b --both` - show both comments and tasks
+- `chant --hollow` - use chant without initialization
+- `chant [-t|--todo] [-n|--note] [-f|--fixme]` - show specific comments (also works with `--hollow` flag)
+- `chant [list] [-b|--both]` - show both comments and tasks
 - `chant task remove --done` - remove every complete task
 - `chant task remove --all` - remove all tasks
 

@@ -3,6 +3,7 @@
 /// Simple emun, used to work with colors in terminal
 pub enum Color {
     Reset,
+    Gray,
     Red,
     Green,
     Yellow,
@@ -14,6 +15,7 @@ pub enum Color {
 fn ascii_color(c: Color) -> String {
     match c {
         Color::Reset => { return "\x1b[0m".to_owned() }
+        Color::Gray => { return "\x1b[90m".to_owned() }
         Color::Red => { return "\x1b[31m".to_owned() }
         Color::Green => { return "\x1b[32m".to_owned() }
         Color::Yellow => { return "\x1b[33m".to_owned() }

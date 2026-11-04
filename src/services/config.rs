@@ -174,6 +174,9 @@ pub fn list_projects(short: bool) {
                     return
                 }
 
+                let warning = color::paint_str("May contain outdated data!".to_string(), color::Color::Gray);
+                println!("{warning}");
+
                 let lines = v.split("\n");
                 for line in lines {
                     if line.is_empty(){ continue; }
