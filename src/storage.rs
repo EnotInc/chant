@@ -20,7 +20,6 @@ pub fn new_storage() -> Storage {
     };
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Stats {
     pub todos: u8,
     pub notes: u8,
@@ -36,6 +35,22 @@ pub fn new_stats() -> Stats {
         todos: 0, notes: 0, fixmes: 0,
         backlog: 0, in_progress: 0, done: 0,
     }
+}
+
+pub struct Summary {
+    pub todos: u8,
+    pub notes: u8,
+    pub fixmes: u8,
+}
+
+pub fn new_summary() -> Summary {
+    return Summary { todos: 0, notes: 0, fixmes: 0 }
+}
+
+pub fn update(s: &mut Summary, stats: &Stats) {
+    s.todos += stats.todos;
+    s.notes += stats.notes;
+    s.fixmes += stats.fixmes;
 }
 
 #[derive(PartialEq, Debug, Deserialize, Serialize, Clone, Ord, PartialOrd, Eq)]

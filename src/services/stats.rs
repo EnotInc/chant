@@ -1,6 +1,6 @@
 use crate::{
     services::color,
-    storage::{Stats, Status, Storage, new_stats}
+    storage::{Stats, Status, Storage, Summary, new_stats}
 };
 
 pub fn get_stats(s: &mut Storage) -> Stats {
@@ -67,4 +67,24 @@ pub fn stats_to_string(stats: Option<Stats>) -> String {
             return format!("[ {t} {n} {f} ] [ {b} {i} {d} ]");
         }
     }
+}
+
+pub fn print_summary(summary: &Summary) {
+    let f_v = color::paint_str("│".to_string(), color::Color::Red);
+    let f_c = color::paint_str("└──".to_string(), color::Color::Red);
+
+    let n_v = color::paint_str("│".to_string(), color::Color::Green);
+    let n_c = color::paint_str("└──".to_string(), color::Color::Green);
+
+    let t_v = color::paint_str("│".to_string(), color::Color::Blue);
+    let t_c = color::paint_str("└──".to_string(), color::Color::Blue);
+
+    let todos = color::paint_str("TODO".to_string(), color::Color::Blue);
+    let notes = color::paint_str("NOTE".to_string(), color::Color::Green);
+    let fixmes = color::paint_str("FIXME".to_string(), color::Color::Red);
+
+    println!("   {t_v} {n_v} {f_v}");
+    println!("   {t_v} {n_v} {f_c} {fixmes}: {}", summary.fixmes);
+    println!("   {t_v} {n_c} {notes}: {}", summary.notes);
+    println!("   {t_c} {todos}: {}", summary.todos);
 }

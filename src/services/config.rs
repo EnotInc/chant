@@ -1,4 +1,4 @@
-use crate::{commands::general::nothing_was_found, services::{color, stats::{stats_to_string, get_stats}}, storage};
+use crate::{commands::general::nothing_was_found, services::{color, stats::{get_stats, print_summary, stats_to_string}}, storage::{self, new_summary, update}};
 use serde::{Deserialize, Serialize};
 use std::{env::home_dir, fs, path::{Path, PathBuf}};
 use toml;
@@ -163,8 +163,11 @@ pub fn list_projects(short: bool) {
         path.push(CONFIG_DIR);
         path.push(PROJECTS);
 
+        let mut summary = new_summary();
+
         let content = fs::read_to_string(&path);
         match content {
+            Err(e) => { println!("Cannot read file:\n{}", e); }
             Ok(v) => {
                 if v.split("\n").count() <= 1 {
                     nothing_was_found();
@@ -196,15 +199,18 @@ pub fn list_projects(short: bool) {
                         None => { stats = stats_to_string(None); }
                         Some(mut s) => {
                             let _stats = get_stats(&mut s);
+                            update(&mut summary, &_stats);
                             stats = stats_to_string(Some(_stats))
                         }
                     }
 
                     println!( " {stats} [{name}] {line}")
                 }
-                println!("");
+
+                if short { return }
+
+                print_summary(&summary);
             },
-            Err(e) => { println!("Cannot read file:\n{}", e); }
         }
     }
 }
