@@ -9,6 +9,7 @@ pub enum Color {
     Yellow,
     Blue,
     Cyan,
+    Code,
 }
 
 /// used to convert given [Color] to the ascii escape sequence of then color
@@ -21,6 +22,7 @@ fn ascii_color(c: Color) -> String {
         Color::Yellow => { return "\x1b[33m".to_owned() }
         Color::Blue => { return "\x1b[34m".to_owned() }
         Color::Cyan => { return "\x1b[36m".to_owned() }
+        Color::Code => { return "\x1b[3;93m".to_owned() }
     }
 }
 

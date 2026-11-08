@@ -96,12 +96,13 @@ pub struct Comment {
     pub id: String,
     pub kind: String,
     pub line: String,
+    pub kept: bool,
     pub index: i32,
     pub hash: u64
 }
 
-pub fn new_comment(kind:String, line: String, index: i32, hash: u64) -> Comment {
-    return Comment { kind: kind, line: line, index: index, hash: hash, id: get_id(hash) }
+pub fn new_comment(kind:String, line: String, index: i32, hash: u64, kept: bool) -> Comment {
+    return Comment { kind: kind, line: line, index: index, hash: hash, id: get_id(hash), kept: kept }
 }
 
 fn get_id(hash: u64) -> String {

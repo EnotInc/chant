@@ -56,8 +56,13 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
             }
             let kind = color::paint_str(c.kind, kind_color);
             let index = color::paint_str(c.index.add(1).to_string(), color::Color::Cyan);
+            let line: String;
+            match c.kept {
+                true => { line = color::paint_str(c.line, color::Color::Code); }
+                false => { line = c.line }
+            }
 
-            file_data += &format!(" {}: [{}] - {}\n", index, kind, c.line);
+            file_data += &format!(" {}: [{}] - {}\n", index, kind, line);
 
         }
         if !file_data.is_empty() {
