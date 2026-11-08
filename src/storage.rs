@@ -96,6 +96,7 @@ pub struct Comment {
     pub id: String,
     pub kind: String,
     pub line: String,
+    #[serde(default)]
     pub kept: bool,
     pub index: i32,
     pub hash: u64
