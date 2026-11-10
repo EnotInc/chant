@@ -15,7 +15,6 @@ pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
             if !is_new_file && new_file.hash == file.hash {
                 new_file = file.clone();
             } else {
-                // NOTE:
                 let lines: Vec<&str> = data.split("\n").collect();
 
                 let mut index: i32 = 0;
@@ -43,7 +42,7 @@ pub fn parse_file(file: &storage::File, is_new_file: bool) -> storage::File {
                 }
             }
             return new_file;
-        },
+        }
     }
 }
 

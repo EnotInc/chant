@@ -53,7 +53,8 @@ pub fn stats_to_string(stats: Option<Stats>) -> String {
             let c = color::paint_str("-".to_string(), color::Color::Cyan);
             let g = color::paint_str("-".to_string(), color::Color::Green);
 
-            return format!("[ {b} {g} {r} ] [ {b} {c} {g} ]");
+            //return format!("[ {b} {g} {r} ] [ {b} {c} {g} ]");
+            return format!("[ {b} {g} {r} | {b} {c} {g} ]");
         }
         Some(s) => {
             let t = color::paint_str(format!("{}", s.todos).to_string(), color::Color::Blue);
@@ -64,7 +65,8 @@ pub fn stats_to_string(stats: Option<Stats>) -> String {
             let i = color::paint_str(format!("{}", s.in_progress).to_string(), color::Color::Cyan);
             let d = color::paint_str(format!("{}", s.done).to_string(), color::Color::Green);
 
-            return format!("[ {t} {n} {f} ] [ {b} {i} {d} ]");
+            //return format!("[ {t} {n} {f} ] [ {b} {i} {d} ]");
+            return format!("[ {t} {n} {f} | {b} {i} {d} ]");
         }
     }
 }

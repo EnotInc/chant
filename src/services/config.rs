@@ -174,7 +174,7 @@ pub fn list_projects(short: bool) {
                     return
                 }
 
-                let warning = color::paint_str("May contain outdated data!".to_string(), color::Color::Gray);
+                let warning = "May contain outdated data!";
                 println!("{warning}");
 
                 let lines = v.split("\n");
@@ -207,7 +207,8 @@ pub fn list_projects(short: bool) {
                         }
                     }
 
-                    println!( " {stats} [{name}] {line}")
+                    let full_path = color::paint_str(line.to_string(), color::Color::Gray);
+                    println!(" {stats} {name} {full_path}")
                 }
 
                 if short { return }
