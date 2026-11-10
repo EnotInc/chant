@@ -1,4 +1,4 @@
-use std::{ops::Add};
+use std::ops::Add;
 
 use crate::{services::color, storage, commands::general, commands::scan, commands::tasks};
 
@@ -40,9 +40,13 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
         coms.sort_by(|a, b| a.1.index.cmp(&b.1.index));
 
         for (_, comment) in coms {
-            if !((comment.kind == "TODO" && (any || todo)) ||
-                 (comment.kind == "NOTE" && (any || note)) ||
-                 (comment.kind == "FIXME"&& (any || fixme))) { continue; }
+            match comment.kind.as_str() {
+                 "TODO" => { if  !todo && !any { continue; } }
+                 "NOTE" => { if  !note && !any { continue; } }
+                "FIXME" => { if !fixme && !any { continue; } }
+                _ => {}
+            };
+
 
             is_empty = false;
             let c: storage::Comment = comment.clone();
@@ -72,12 +76,19 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
             print!("{}", file_data);
         }
     }
+
     if is_empty {
         general::nothing_was_found();
+    } else { // just to make output prettier
+        println!()
+    }
+
+    if is_both {
+        list_both();
         return;
     }
-    println!();
-    if !s.tasks.is_empty() && !is_both {
+
+    if !s.tasks.is_empty()  {
         let t = color::paint_str("~~~".to_string(), color::Color::Blue);
         println!(" {}", t);
     }

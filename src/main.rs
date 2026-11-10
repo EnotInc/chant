@@ -11,45 +11,36 @@ use crate::{cli_struct::{Cli, Cmds, TaskOpt}, commands::general::dont_run_at_hom
 fn main() {
     dont_run_at_home();
 
+
     let cli = Cli::parse();
-    if cli.todo || cli.note || cli.fixme || cli.hollow || cli.both {
-        if cli.hollow && cli.both {
+    if cli.hollow {
+        if cli.both {
             let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
             let hollow = services::color::paint_str("--hollow".to_string(), services::color::Color::Yellow);
             let both = services::color::paint_str("--both".to_string(), services::color::Color::Yellow);
-            println!("{error} flag {hollow} can't be used with {both}. Use one or another");
+            println!(" {error} flag {both} can't be used with {hollow}!");
             return;
         }
 
-        if cli.hollow {
-            commands::scan::scan_hollow(cli.todo, cli.note, cli.fixme);
-            return;
-        } 
-
-        commands::list::list(cli.todo, cli.note, cli.fixme, cli.both);
-        if cli.both {
-            commands::list::list_both();
-            return;
-        }
+        commands::scan::scan_hollow(cli.todo, cli.note, cli.fixme);
+        return;
     }
     match cli.cmd {
-        None => commands::list::list(true, true, true, false),
+        None => commands::list::list(cli.todo, cli.note, cli.fixme, cli.both), 
         Some(Cmds::Dismiss { }) => commands::dismiss::dismiss(),
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::Reset { }) => commands::general::reset(),
-        Some(Cmds::Stave { track, remove , short}) => {
+        Some(Cmds::Stave { track, remove , short }) => {
             match (track, remove) {
                 (true,  true) => { println!("You cannot use both flags at the same time"); }
                 (true,  false) => { commands::stave::add_this(); }
                 (false, true) => { commands::stave::remove_this(); }
                 (false, false) => { commands::stave::projects(short); }
             }
+            return;
         }
-        Some(Cmds::List { both, todo, note, fixme}) => {
-            commands::list::list(todo, note, fixme, both);
-            if both { commands::list::list_both(); }
-        },
+        Some(Cmds::List { both, todo, note, fixme }) => commands::list::list(todo, note, fixme, both),
         Some(Cmds::Task { option }) => {
             match option {
                 None => { commands::tasks::print_tasks(); }
@@ -78,6 +69,7 @@ fn main() {
                     }
                 }
             }
+            return;
         },
     }
 }
