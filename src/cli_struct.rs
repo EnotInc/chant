@@ -78,7 +78,11 @@ pub enum Cmds {
 
         /// hides info about amount of comments and tasks in projects
         #[arg(short, long)]
-        short: bool
+        short: bool,
+
+        /// quickly scans current project and show info about it
+        #[arg(short, long)]
+        local: bool,
     }
 }
 

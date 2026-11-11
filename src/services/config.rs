@@ -1,6 +1,6 @@
-use crate::{commands::general::nothing_was_found, services::{color, stats::{get_stats, print_summary, stats_to_string}}, storage::{self, new_summary, update}};
+use crate::{commands::{general::{is_initialized, nothing_was_found}, scan::scan},  services::{color, stats::{get_stats, print_summary, stats_to_string}}, storage::{self, new_summary, update}};
 use serde::{Deserialize, Serialize};
-use std::{env::home_dir, fs, path::{Path, PathBuf}};
+use std::{env::home_dir, env::current_dir, fs, path::{Path, PathBuf}};
 use toml;
 
 const CONFIG_DIR: &str = ".chant";
@@ -158,7 +158,14 @@ pub fn remove_project(full_path: &str) {
     }
 }
 
-pub fn list_projects(short: bool) {
+pub fn list_projects(short: bool, local: bool) {
+    if local && !is_initialized() {
+        let error = color::paint_str("Error".to_string(), color::Color::Red);
+        let chant = color::paint_str("chant".to_string(), color::Color::Yellow);
+        println!(" {error}: {chant} isn't initialized in this directory!\n");
+        return;
+    }
+
     if let Some(mut path) = home_dir() {
         path.push(CONFIG_DIR);
         path.push(PROJECTS);
@@ -174,19 +181,35 @@ pub fn list_projects(short: bool) {
                     return
                 }
 
+                let mut cur_dir  = String::new();
+                if local {
+                    let res = current_dir();
+                    match res {
+                        Err(_) => {
+                            println!(" Unable to get local project!");
+                            return;
+                        }
+                        Ok(path) => {
+                            cur_dir = path.to_string_lossy().to_string();
+                            scan();
+                        }
+                    }
+                }
+
                 let warning = "May contain outdated data!";
-                println!("{warning}");
+                if !local { println!("{warning}"); }
 
                 let lines = v.split("\n");
                 for line in lines {
                     if line.is_empty(){ continue; }
+                    if local && line != cur_dir { continue; }
 
                     let name: String;
 
-                    let mut local =PathBuf::new();
-                    local.push(line);
-                    local.push(CONFIG_DIR);
-                    match local.exists() { 
+                    let mut project_path =PathBuf::new();
+                    project_path.push(line);
+                    project_path.push(CONFIG_DIR);
+                    match project_path.exists() { 
                         true => { name = color::paint_str(get_name(&line), color::Color::Cyan); }
                         false => { name = color::paint_str(get_name(&line), color::Color::Red); }
                     } 

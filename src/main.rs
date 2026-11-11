@@ -31,12 +31,21 @@ fn main() {
         Some(Cmds::Init { }) => commands::init::init(),
         Some(Cmds::Scan { }) => commands::scan::scan_force(),
         Some(Cmds::Reset { }) => commands::general::reset(),
-        Some(Cmds::Stave { track, remove , short }) => {
+        Some(Cmds::Stave { track, remove , short , local}) => {
+            if local && (track || remove) {
+                let error = services::color::paint_str("Error:".to_string(), services::color::Color::Red);
+                let local = services::color::paint_str("--local".to_string(), services::color::Color::Yellow);
+                let remove = services::color::paint_str("--remove".to_string(), services::color::Color::Yellow);
+                let track = services::color::paint_str("--track".to_string(), services::color::Color::Yellow);
+                println!("{error}: conflicting flags: {local} can't be used with {remove} or {track}\n");
+                return
+            }
+
             match (track, remove) {
                 (true,  true) => { println!("You cannot use both flags at the same time"); }
                 (true,  false) => { commands::stave::add_this(); }
                 (false, true) => { commands::stave::remove_this(); }
-                (false, false) => { commands::stave::projects(short); }
+                (false, false) => { commands::stave::projects(short, local); }
             }
             return;
         }
