@@ -30,11 +30,13 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
         return;
     }
 
-    for file in s.files {
+    let mut files: Vec<_> = s.files.iter().collect(); 
+    files.sort_by(|a, b| b.1.path.cmp(&a.1.path));
+
+    for file in files {
         let mut file_data: String = String::new();
-        if file.1.comments.is_empty() {
-            continue;
-        }
+
+        if file.1.comments.is_empty() { continue; }
 
         let mut coms: Vec<_> = file.1.comments.iter().collect();
         coms.sort_by(|a, b| a.1.index.cmp(&b.1.index));
@@ -53,8 +55,8 @@ pub fn list(todo: bool, note: bool, fixme: bool, is_both: bool) {
 
             let mut kind_color = color::Color::Yellow;
             match c.kind.as_str() {
-                "TODO" => kind_color = color::Color::Blue,
-                "NOTE" => kind_color = color::Color::Green,
+                 "TODO" => kind_color = color::Color::Blue,
+                 "NOTE" => kind_color = color::Color::Green,
                 "FIXME" => kind_color = color::Color::Red,
                 _ => {}
             }

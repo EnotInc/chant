@@ -194,7 +194,6 @@ pub fn migrate() {
     }
 }
 
-// TODO: update visualisation
 pub fn print_tasks() {
     if !general::is_initialized() {
         general::init_first();
@@ -209,7 +208,11 @@ pub fn print_tasks() {
     }
 
     let mut tasks: Vec<_> = s.tasks.values().collect();
-    tasks.sort_by_key(|task| &task.status);
+    tasks.sort_by(|a, b|{
+        a.status.cmp(&b.status).then({
+            a.id.cmp(&b.id)
+        })
+    });
 
     let mut statuses: Vec<Status> = Vec::new();
     for task in tasks {
